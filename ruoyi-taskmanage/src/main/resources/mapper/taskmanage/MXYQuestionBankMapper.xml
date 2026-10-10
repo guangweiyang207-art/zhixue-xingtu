@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYQuestionBankMapper">
+
+    <!-- my_question_bank 实际列: id, b_id, q_id, score -->
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.QuestionBank">
+        <id     column="id"    property="id"    />
+        <result column="b_id"  property="bId"   />
+        <result column="q_id"  property="qId"   />
+        <result column="score" property="score" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, b_id, q_id, score
+    </sql>
+
+    <select id="selectQuestionBankList" parameterType="com.ruoyi.taskmanage.domain.QuestionBank" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM my_question_bank
+        <where>
+            <if test="bId != null">AND b_id = #{bId}</if>
+            <if test="qId != null">AND q_id = #{qId}</if>
+        </where>
+        ORDER BY b_id ASC, q_id ASC
+    </select>
+
+    <select id="selectQuestionBankById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM my_question_bank WHERE id = #{id}
+    </select>
+
+    <insert id="insertQuestionBank" parameterType="com.ruoyi.taskmanage.domain.QuestionBank" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO my_question_bank (b_id, q_id, score)
+        VALUES (#{bId}, #{qId}, #{score})
+    </insert>
+
+    <update id="updateQuestionBank" parameterType="com.ruoyi.taskmanage.domain.QuestionBank">
+        UPDATE my_question_bank
+        <set>
+            <if test="bId   != null">b_id  = #{bId},</if>
+            <if test="qId   != null">q_id  = #{qId},</if>
+            <if test="score != null and score != ''">score = #{score},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteQuestionBankById">
+        DELETE FROM my_question_bank WHERE id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.errorbook.mapper.ErrorBookMapper">
+
+    <resultMap id="ErrorBookRowResult" type="com.ruoyi.errorbook.pojo.ErrorBookRow">
+        <id     property="ebId"           column="eb_id"/>
+        <result property="stuId"          column="stu_id"/>
+        <result property="hqId"           column="hq_id"/>
+        <result property="cId"            column="c_id"/>
+        <result property="wrongAnswer"    column="wrong_answer"/>
+        <result property="correctAnswer"  column="correct_answer"/>
+        <result property="analysis"       column="analysis"/>
+        <result property="tag"            column="tag"/>
+        <result property="errorCount"     column="error_count"/>
+        <result property="isMastered"     column="is_mastered"/>
+        <result property="lastWrongTime"  column="last_wrong_time"/>
+        <result property="createTime"     column="create_time"/>
+        <result property="updateTime"     column="update_time"/>
+        <result property="courseName"     column="c_name"/>
+        <result property="courseType"     column="type"/>
+    </resultMap>
+
+    <select id="getErrorBookList" resultMap="ErrorBookRowResult">
+        SELECT eb.eb_id, eb.stu_id, eb.hq_id, eb.c_id,
+               eb.wrong_answer, eb.correct_answer, eb.analysis,
+               eb.tag, eb.error_count, eb.is_mastered,
+               eb.last_wrong_time, eb.create_time, eb.update_time,
+               c.c_name, c.type
+        FROM my_error_book eb
+        LEFT JOIN my_course c ON eb.c_id = c.c_id
+        WHERE eb.stu_id = #{stuId}
+        ORDER BY eb.last_wrong_time DESC
+    </select>
+
+    <select id="getErrorBookListBySubject" resultMap="ErrorBookRowResult">
+        SELECT eb.eb_id, eb.stu_id, eb.hq_id, eb.c_id,
+               eb.wrong_answer, eb.correct_answer, eb.analysis,
+               eb.tag, eb.error_count, eb.is_mastered,
+               eb.last_wrong_time, eb.create_time, eb.update_time,
+               c.c_name, c.type
+        FROM my_error_book eb
+        LEFT JOIN my_course c ON eb.c_id = c.c_id
+        WHERE eb.stu_id = #{stuId}
+          AND c.type = #{courseType}
+        ORDER BY eb.last_wrong_time DESC
+    </select>
+
+    <select id="countErrorBook" resultType="int">
+        SELECT COUNT(*)
+        FROM my_error_book
+        WHERE stu_id = #{stuId}
+    </select>
+
+    <select id="countPendingErrors" resultType="int">
+        SELECT COUNT(*)
+        FROM my_error_book
+        WHERE stu_id = #{stuId} AND is_mastered = 0
+    </select>
+
+    <select id="countMasteredErrors" resultType="int">
+        SELECT COUNT(*)
+        FROM my_error_book
+        WHERE stu_id = #{stuId} AND is_mastered = 1
+    </select>
+
+</mapper>

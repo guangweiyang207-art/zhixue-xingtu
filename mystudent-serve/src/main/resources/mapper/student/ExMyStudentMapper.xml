@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mystudent.mapper.ExMyStudentMapper">
+
+    <resultMap type="MyStudent" id="MyStudentResult">
+        <result property="stuId"    column="stu_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="studentNo"    column="student_no"    />
+        <result property="major"    column="major"    />
+        <result property="grade"    column="grade"    />
+        <result property="className"    column="class_name"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="teacherId"    column="teacher_id"    />
+        <result property="rankLevel"    column="rank_level"    />
+        <result property="rankScore"    column="rank_score"    />
+        <result property="totalQuestions"    column="total_questions"    />
+        <result property="correctQuestions"    column="correct_questions"    />
+        <result property="studyHours"    column="study_hours"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectMyStudentVo">
+        select stu_id, user_id, student_no, major, grade, class_name, birthday, teacher_id, rank_level, rank_score, total_questions, correct_questions, study_hours, create_time, update_time from my_student
+    </sql>
+
+    <select id="selectMyStudentById" parameterType="Long" resultMap="MyStudentResult">
+        <include refid="selectMyStudentVo"/>
+        where stu_id = #{stuId}
+    </select>
+
+    <select id="selectMyStudentList" parameterType="com.ruoyi.mystudent.domain.MyStudent" resultMap="MyStudentResult">
+        <include refid="selectMyStudentVo"/>
+        <where>
+            <if test="studentNo != null  and studentNo != ''"> and student_no like concat('%', #{studentNo}, '%')</if>
+            <if test="major != null  and major != ''"> and major = #{major}</if>
+            <if test="grade != null  and grade != ''"> and grade = #{grade}</if>
+        </where>
+    </select>
+
+    <select id="selectMyStudentByUserId" parameterType="Long" resultMap="MyStudentResult">
+        <include refid="selectMyStudentVo"/>
+        where user_id = #{userId}
+    </select>
+
+</mapper>

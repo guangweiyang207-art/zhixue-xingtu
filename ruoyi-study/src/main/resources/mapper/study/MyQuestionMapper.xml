@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.study.mapper.MyQuestionMapper">
+
+    <resultMap type="com.ruoyi.study.domain.MyQuestion" id="MyQuestionResult">
+        <result property="qId" column="q_id"/>
+        <result property="questionType" column="question_type"/>
+        <result property="questionContent" column="question_content"/>
+        <result property="options" column="options"/>
+        <result property="correctAnswer" column="correct_answer"/>
+        <result property="score" column="score"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="homeworkTitle" column="homework_title"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="courseName" column="course_name"/>
+    </resultMap>
+
+    <sql id="selectMyQuestionVo">
+        select q.q_id, q.question_type, q.question_content, q.options, q.correct_answer, q.score, q.difficulty, q.sort_order,
+               h.title as homework_title, b.qb_name as bank_name, c.c_name as course_name
+        from my_question q
+        left join my_homework_bank hqb on q.q_id = hqb.b_id
+        left join my_homework h on hqb.hw_id = h.hw_id
+        left join my_question_bank qb on q.q_id = qb.q_id
+        left join my_bank b on qb.b_id = b.hb_id
+        left join my_course c on h.c_id = c.c_id
+    </sql>
+
+    <select id="selectMyQuestionList" parameterType="com.ruoyi.study.domain.MyQuestion" resultMap="MyQuestionResult">
+        <include refid="selectMyQuestionVo"/>
+        <where>
+            <if test="questionType != null">
+                and q.question_type = #{questionType}
+            </if>
+            <if test="questionContent != null and questionContent != ''">
+                and q.question_content like concat('%', #{questionContent}, '%')
+            </if>
+            <if test="difficulty != null">
+                and q.difficulty = #{difficulty}
+            </if>
+            <if test="homeworkTitle != null and homeworkTitle != ''">
+                and h.title like concat('%', #{homeworkTitle}, '%')
+            </if>
+            <if test="bankName != null and bankName != ''">
+                and b.qb_name like concat('%', #{bankName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMyQuestionByQId" parameterType="Long" resultMap="MyQuestionResult">
+        <include refid="selectMyQuestionVo"/>
+        where q.q_id = #{qId}
+    </select>
+
+    <insert id="insertMyQuestion" parameterType="com.ruoyi.study.domain.MyQuestion" useGeneratedKeys="true" keyProperty="qId">
+        insert into my_question
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionType != null">question_type,</if>
+            <if test="questionContent != null and questionContent != ''">question_content,</if>
+            <if test="options != null and options != ''">options,</if>
+            <if test="correctAnswer != null and correctAnswer != ''">correct_answer,</if>
+            <if test="score != null">score,</if>
+            <if test="difficulty != null">difficulty,</if>
+            <if test="sortOrder != null">sort_order,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionType != null">#{questionType},</if>
+            <if test="questionContent != null and questionContent != ''">#{questionContent},</if>
+            <if test="options != null and options != ''">#{options},</if>
+            <if test="correctAnswer != null and correctAnswer != ''">#{correctAnswer},</if>
+            <if test="score != null">#{score},</if>
+            <if test="difficulty != null">#{difficulty},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMyQuestion" parameterType="com.ruoyi.study.domain.MyQuestion">
+        update my_question
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionType != null">question_type = #{questionType},</if>
+            <if test="questionContent != null and questionContent != ''">question_content = #{questionContent},</if>
+            <if test="options != null and options != ''">options = #{options},</if>
+            <if test="correctAnswer != null and correctAnswer != ''">correct_answer = #{correctAnswer},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="difficulty != null">difficulty = #{difficulty},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+        </trim>
+        where q_id = #{qId}
+    </update>
+
+    <delete id="deleteMyQuestionByQId" parameterType="Long">
+        delete from my_question where q_id = #{qId}
+    </delete>
+
+    <delete id="deleteMyQuestionByQIds">
+        delete from my_question where q_id in
+        <foreach collection="array" item="qId" open="(" separator="," close=")">
+            #{qId}
+        </foreach>
+    </delete>
+
+</mapper>

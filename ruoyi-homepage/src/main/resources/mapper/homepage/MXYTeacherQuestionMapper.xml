@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homepage.mapper.MXYTeacherQuestionMapper">
+
+    <resultMap id="TodoQuestionMap" type="com.ruoyi.homepage.domain.TodoQuestion">
+        <id     column="chat_id"        property="id"           />
+        <result column="stu_id"         property="stuId"        />
+        <result column="student_name"   property="studentName"  />
+        <result column="student_no"     property="studentNo"    />
+        <result column="question"       property="question"     />
+        <result column="question_type"  property="questionType" />
+        <result column="create_time"    property="createTime"   />
+        <result column="answer"         property="answer"       />
+    </resultMap>
+
+    <!-- 待回答问题列表:仅 answer 为空、teacher_id 匹配 -->
+    <select id="selectList" resultMap="TodoQuestionMap">
+        SELECT
+            c.chat_id,
+            c.stu_id,
+            u.real_name AS student_name,
+            s.student_no,
+            c.question,
+            c.question_type,
+            c.create_time
+        FROM my_ai_chat c
+        LEFT JOIN my_student  s ON s.stu_id  = c.stu_id
+        LEFT JOIN my_sys_user u ON u.user_id = s.user_id
+        <where>
+            (c.answer IS NULL OR c.answer = '')
+            <if test="teacherId != null">AND c.teacher_id = #{teacherId}</if>
+        </where>
+        ORDER BY c.create_time DESC, c.chat_id DESC
+    </select>
+
+    <select id="selectDetail" resultMap="TodoQuestionMap">
+        SELECT
+            c.chat_id,
+            c.stu_id,
+            u.real_name AS student_name,
+            s.student_no,
+            c.question,
+            c.question_type,
+            c.create_time
+        FROM my_ai_chat c
+        LEFT JOIN my_student  s ON s.stu_id  = c.stu_id
+        LEFT JOIN my_sys_user u ON u.user_id = s.user_id
+        WHERE c.chat_id = #{chatId}
+    </select>
+
+    <!-- 已回答问题列表:answer 非空、teacher_id 匹配 -->
+    <select id="selectReplied" resultMap="TodoQuestionMap">
+        SELECT
+            c.chat_id,
+            c.stu_id,
+            u.real_name AS student_name,
+            s.student_no,
+            c.question,
+            c.question_type,
+            c.create_time,
+            c.answer
+        FROM my_ai_chat c
+        LEFT JOIN my_student  s ON s.stu_id  = c.stu_id
+        LEFT JOIN my_sys_user u ON u.user_id = s.user_id
+        <where>
+            c.answer IS NOT NULL AND c.answer != ''
+            <if test="teacherId != null">AND c.teacher_id = #{teacherId}</if>
+        </where>
+        ORDER BY c.create_time DESC, c.chat_id DESC
+    </select>
+
+    <!-- 提交回答:写入 answer,补全 teacher_id(若空) -->
+    <update id="updateAnswer">
+        UPDATE my_ai_chat
+        <set>
+            answer = #{answer},
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            is_satisfied = 0
+        </set>
+        WHERE chat_id = #{chatId}
+    </update>
+
+</mapper>

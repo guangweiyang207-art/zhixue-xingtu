@@ -1,0 +1,133 @@
+/* =====================================================================
+ * 智学星途 · 全局设计 Token (教师端)
+ * 与学生端保持 100% 一致
+ * ================================================================== */
+
+/* 行为相关颜色 — 主色 / 强调色 / 状态色 -------------------- */
+$uni-color-primary:        #1E3A5F;
+$uni-color-primary-soft:   #E6EBF2;
+$uni-color-primary-hover:  #2A4F7A;
+$uni-color-primary-press:  #142B47;
+
+$uni-color-accent:         #A47148;
+$uni-color-accent-soft:    #F3E8DC;
+
+$uni-color-success:        #4A7C59;
+$uni-color-success-soft:   #E5EDE5;
+$uni-color-warning:        #B8762E;
+$uni-color-warning-soft:   #F6EBD8;
+$uni-color-error:          #A8443B;
+$uni-color-error-soft:     #F2E0DC;
+$uni-color-info:           #4A6B7C;
+$uni-color-info-soft:      #E0E7EB;
+
+/* 文字颜色 — 4 级灰度 ------------------------------------ */
+$uni-text-color:           #1F2937;
+$uni-text-color-secondary: #4B5563;
+$uni-text-color-tertiary:  #6B7280;
+$uni-text-color-placeholder: #9CA3AF;
+$uni-text-color-disabled:  #B8B0A2;
+$uni-text-color-inverse:   #FFFFFF;
+$uni-text-color-grey:      #6B7280;
+$uni-text-color-disable:   #B8B0A2;
+
+/* 背景颜色 — 暖米色基调 ------------------------------------ */
+$uni-bg-color:             #FFFFFF;
+$uni-bg-color-page:        #F7F4ED;
+$uni-bg-color-alt:         #F1ECDE;
+$uni-bg-color-grey:        #F1ECDE;
+$uni-bg-color-hover:       #F1ECDE;
+$uni-bg-color-mask:        rgba(30, 58, 95, 0.45);
+
+/* 边框 / 分割线 ------------------------------------------- */
+$uni-border-color:         #E8E2D5;
+$uni-border-color-light:   #EDE9DC;
+$uni-border-color-strong:  #C9BFA8;
+$uni-divider-color:        #EDE9DC;
+
+/* 文字尺寸 — 8 级 ---------------------------------------- */
+$uni-font-size-xs:         10px;
+$uni-font-size-sm:         12px;
+$uni-font-size-base:       14px;
+$uni-font-size-md:         15px;
+$uni-font-size-lg:         16px;
+$uni-font-size-xl:         18px;
+$uni-font-size-2xl:        20px;
+$uni-font-size-3xl:        24px;
+$uni-font-size-4xl:        28px;
+
+/* 字重 ---------------------------------------------------- */
+$uni-font-weight-light:    300;
+$uni-font-weight-normal:   400;
+$uni-font-weight-medium:   500;
+$uni-font-weight-semibold: 600;
+$uni-font-weight-bold:     700;
+
+/* 图片尺寸 ----------------------------------------------- */
+$uni-img-size-xs:          18px;
+$uni-img-size-sm:          20px;
+$uni-img-size-base:        26px;
+$uni-img-size-md:          32px;
+$uni-img-size-lg:          40px;
+$uni-img-size-xl:          56px;
+
+/* 圆角 — 语义化 ------------------------------------------- */
+$uni-radius-xs:            4px;
+$uni-radius-sm:            8px;
+$uni-radius-md:            12px;
+$uni-radius-lg:            16px;
+$uni-radius-xl:            20px;
+$uni-radius-2xl:           28px;
+$uni-radius-full:          9999px;
+
+$uni-border-radius-sm:     8px;
+$uni-border-radius-base:   12px;
+$uni-border-radius-lg:     16px;
+$uni-border-radius-circle: 50%;
+
+/* 水平间距 — 8 倍节奏 ------------------------------------- */
+$uni-spacing-row-xs:       4px;
+$uni-spacing-row-sm:       8px;
+$uni-spacing-row-base:     12px;
+$uni-spacing-row-md:       16px;
+$uni-spacing-row-lg:       20px;
+$uni-spacing-row-xl:       24px;
+$uni-spacing-row-2xl:      32px;
+$uni-spacing-row-3xl:      40px;
+
+/* 垂直间距 ----------------------------------------------- */
+$uni-spacing-col-xs:       4px;
+$uni-spacing-col-sm:       8px;
+$uni-spacing-col-base:     12px;
+$uni-spacing-col-md:       16px;
+$uni-spacing-col-lg:       20px;
+$uni-spacing-col-xl:       24px;
+$uni-spacing-col-2xl:      32px;
+$uni-spacing-col-3xl:      40px;
+
+/* 透明度 ------------------------------------------------- */
+$uni-opacity-disabled:     0.4;
+$uni-opacity-muted:        0.6;
+
+/* 阴影 — 2 层极淡叠加 ------------------------------------- */
+$uni-shadow-none:          none;
+$uni-shadow-xs:            0 1rpx 2rpx rgba(30, 58, 95, 0.04);
+$uni-shadow-sm:            0 2rpx 8rpx rgba(30, 58, 95, 0.06);
+$uni-shadow-md:            0 4rpx 16rpx rgba(30, 58, 95, 0.08);
+$uni-shadow-lg:            0 8rpx 32rpx rgba(30, 58, 95, 0.10);
+$uni-shadow-xl:            0 16rpx 48rpx rgba(30, 58, 95, 0.12);
+$uni-shadow-inset:         inset 0 1rpx 2rpx rgba(30, 58, 95, 0.06);
+
+/* 动画时长 ----------------------------------------------- */
+$uni-duration-fast:        0.15s;
+$uni-duration-base:        0.25s;
+$uni-duration-slow:        0.4s;
+$uni-ease:                 cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+/* 文章场景相关 ------------------------------------------- */
+$uni-color-title:          #1F2937;
+$uni-font-size-title:      20px;
+$uni-color-subtitle:       #4B5563;
+$uni-font-size-subtitle:   18px;
+$uni-color-paragraph:      #4B5563;
+$uni-font-size-paragraph:  15px;

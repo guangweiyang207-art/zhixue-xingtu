@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homepage.mapper.MXYSearchMapper">
+
+    <resultMap id="CourseMap" type="com.ruoyi.taskmanage.domain.Course">
+        <id     column="c_id"            property="cId"            />
+        <result column="c_name"          property="cName"          />
+        <result column="teacher_id"      property="teacherId"      />
+        <result column="type"            property="type"           />
+        <result column="tag"             property="tag"            />
+        <result column="difficulty"      property="difficulty"     />
+        <result column="max_person"      property="maxPerson"      />
+        <result column="current_person"  property="currentPerson"  />
+        <result column="description"     property="description"    />
+        <result column="cover_image"     property="coverImage"     />
+        <result column="status"          property="status"         />
+        <result column="start_time"      property="startTime"      />
+        <result column="end_time"        property="endTime"        />
+        <result column="resource_id"     property="resourceId"     />
+        <result column="remark"          property="remark"         />
+        <result column="create_time"     property="createTime"     />
+        <result column="update_time"     property="updateTime"     />
+    </resultMap>
+
+    <resultMap id="HomeworkMap" type="com.ruoyi.taskmanage.domain.Homework">
+        <id     column="homework_id"     property="homeworkId"     />
+        <result column="homework_name"   property="homeworkName"   />
+        <result column="course_id"       property="courseId"       />
+        <result column="course_name"     property="courseName"     />
+        <result column="teacher_id"      property="teacherId"      />
+        <result column="content"         property="content"        />
+        <result column="deadline"        property="deadline"       />
+        <result column="total_score"     property="totalScore"     />
+        <result column="status"          property="status"         />
+        <result column="create_time"     property="createTime"     />
+        <result column="update_time"     property="updateTime"     />
+        <result column="remark"          property="remark"         />
+    </resultMap>
+
+    <resultMap id="NoticeMap" type="com.ruoyi.taskmanage.domain.Notice">
+        <id     column="notice_id"       property="noticeId"       />
+        <result column="notice_title"    property="noticeTitle"    />
+        <result column="notice_content"  property="noticeContent"  />
+        <result column="notice_type"     property="noticeType"     />
+        <result column="create_by"       property="createBy"       />
+        <result column="create_by_name"  property="createByName"   />
+        <result column="status"          property="status"         />
+        <result column="publish_time"    property="publishTime"    />
+        <result column="create_time"     property="createTime"     />
+        <result column="update_time"     property="updateTime"     />
+        <result column="remark"          property="remark"         />
+    </resultMap>
+
+    <select id="searchCourse" resultMap="CourseMap">
+        SELECT c_id, c_name, teacher_id, type, tag, difficulty, max_person, current_person,
+               description, cover_image, status, start_time, end_time, resource_id, remark, create_time, update_time
+        FROM my_course
+        WHERE c_name LIKE CONCAT('%', #{keyword}, '%')
+           OR description LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY create_time DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="searchHomework" resultMap="HomeworkMap">
+        SELECT hw_id, std_id, c_id, teacher_id, title, content, type, total_score,
+               deadline, status, create_time, update_time
+        FROM my_homework
+        WHERE title   LIKE CONCAT('%', #{keyword}, '%')
+           OR content LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY create_time DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="searchNotice" resultMap="NoticeMap">
+        SELECT n.noti_id            AS notice_id,
+               n.title              AS notice_title,
+               n.content            AS notice_content,
+               n.priority           AS notice_type,
+               n.sender_id          AS create_by,
+               u.real_name          AS create_by_name,
+               n.status,
+               n.publish_time,
+               n.create_time,
+               n.update_time,
+               NULL                AS remark
+        FROM my_notification n
+        LEFT JOIN my_sys_user u ON u.user_id = n.sender_id
+        WHERE n.title   LIKE CONCAT('%', #{keyword}, '%')
+           OR n.content LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY n.publish_time DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

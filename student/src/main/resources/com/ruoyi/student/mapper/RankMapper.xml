@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.RankMapper">
+
+    <!-- my_rank_config 表映射 -->
+    <resultMap id="RankConfigResult" type="com.ruoyi.student.pojo.RankConfig">
+        <id property="rankId"      column="rank_id"/>
+        <result property="rankName" column="rank_name"/>
+        <result property="rankIcon" column="rank_icon"/>
+        <result property="minScore" column="min_score"/>
+        <result property="maxScore" column="max_score"/>
+        <result property="color"    column="color"/>
+        <result property="description" column="description"/>
+        <result property="sortOrder" column="sort_order"/>
+    </resultMap>
+
+    <select id="getStudentScore" resultType="java.util.Map">
+        SELECT s.rank_level, s.rank_score, s.total_questions, s.correct_questions
+        FROM my_student s
+        WHERE s.stu_id = #{stuId}
+    </select>
+
+    <select id="getRankByScore" resultMap="RankConfigResult">
+        SELECT rank_id, rank_name, rank_icon, min_score, max_score, color, description, sort_order
+        FROM my_rank_config
+        WHERE min_score &lt;= #{score} AND max_score &gt;= #{score}
+        LIMIT 1
+    </select>
+
+    <select id="getNextRank" resultMap="RankConfigResult">
+        SELECT rank_id, rank_name, rank_icon, min_score, max_score, color, description, sort_order
+        FROM my_rank_config
+        WHERE min_score &gt; #{score}
+        ORDER BY min_score ASC
+        LIMIT 1
+    </select>
+
+</mapper>

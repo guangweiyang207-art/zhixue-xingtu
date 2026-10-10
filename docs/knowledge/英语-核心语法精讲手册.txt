@@ -1,0 +1,11 @@
+被动语态的构成与使用：被动语态的基本结构是"be 动词+过去分词"，用于强调动作的承受者或动作本身而非执行者。各时态的被动形式：一般现在时 am/is/are done，一般过去时 was/were done，现在进行时 am/is/are being done，现在完成时 have/has been done，含情态动词的结构为情态动词+be done。例如 The classroom is cleaned every day. 这间教室每天被打扫。改为被动语态时注意主谓一致和时态对应，by 短语引出执行者，不需要时可以省略。
+
+虚拟语气的三种基本形态：与现在事实相反，从句用一般过去时（be 动词统一用 were），主句用 would/could/might+动词原形，如 If I were you, I would accept the offer. 与过去事实相反，从句用 had done，主句用 would have done，如 If he had studied harder, he would have passed the exam. 与将来事实相反，从句用 should/were to+动词原形，主句用 would+动词原形。注意在 wish 后面的宾语从句中，也遵循相同的时态后移规则：I wish I were a bird 表示与现在相反的愿望。
+
+非谓语动词三大类辨析：不定式 to do 表示将来的、具体的、一次性的动作，常作目的状语，如 He came here to see you. 动名词 doing 表示抽象的、习惯性的、已发生的动作，作主语时谓语用单数，如 Swimming is good for health. 分词作状语时，现在分词 doing 表示主动或进行，过去分词 done 表示被动或完成，如 Seen from the hill, the city looks beautiful.（城市被看，用过去分词）。判断用哪种非谓语形式的关键是分析它与逻辑主语之间的主被动关系。
+
+定语从句关系词的选择规则：关系代词 who 指人作主语，whom 指人作宾语（可省略），which 指物，that 既可指人也可指物。先行词被序数词、最高级、the only、all、any、every 等修饰时只能用 that；先行词是 everything、nothing、anything 等不定代词时也只能用 that。关系副词 when 相当于 in/at which，where 相当于 in/at which，why 相当于 for which。判断用关系代词还是关系副词，要看先行词在从句中充当的成分：作主语或宾语用代词，作状语用副词。例如 This is the school where I studied.（我在这个学校学习，school 作地点状语）。
+
+名词性从句的连接词区分：that 引导陈述语气的从句，无词义不作成分但不能省略（宾语从句中可省）；whether/if 引导"是否"含义的从句，介词后和与 or not 连用时只能用 whether；连接代词 what/who/which 和连接副词 when/where/why/how 在从句中既起连接作用又充当成分。同位语从句（说明 idea/fact/news/belief 等抽象名词的内容）用 that 引导，如 The news that our team won the game excited us all. 区分定语从句与同位语从句的方法：定语从句中 that 作成分，同位语从句中 that 不作任何成分。
+
+倒装句的基本类型：完全倒装将整个谓语移到主语之前，常见于表示地点的介词短语开头，如 In front of the house stands a tall tree. 部分倒装只将助动词、情态动词或 be 动词移到主语前。需要部分倒装的常见情形：否定副词 never/seldom/hardly/little/not until 开头的句子；only+状语开头的句子；so/such...that 结构中 so/such 部分提前；as/though 引导的让步状语从句；so/neither/nor 开头表示"也（不）"的句子，如 So excited was he that he couldn't sleep. 注意倒装后主谓一致仍由主语决定。

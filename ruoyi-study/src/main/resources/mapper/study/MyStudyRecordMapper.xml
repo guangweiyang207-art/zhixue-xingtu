@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.study.mapper.MyStudyRecordMapper">
+
+    <resultMap type="com.ruoyi.study.domain.MyStudyRecord" id="MyStudyRecordResult">
+        <result property="srId" column="sr_id"/>
+        <result property="stuId" column="stu_id"/>
+        <result property="cId" column="c_id"/>
+        <result property="studyType" column="study_type"/>
+        <result property="studyDuration" column="study_duration"/>
+        <result property="studyDate" column="study_date"/>
+        <result property="progress" column="progress"/>
+        <result property="createTime" column="create_time"/>
+        <result property="studentName" column="student_name"/>
+        <result property="courseName" column="course_name"/>
+    </resultMap>
+
+    <sql id="selectMyStudyRecordVo">
+        select r.sr_id, r.stu_id, r.c_id, r.study_type, r.study_duration, r.study_date, r.progress, r.create_time,
+               COALESCE(u.real_name, CONCAT('学生', r.stu_id)) AS student_name,
+               COALESCE(c.c_name, CONCAT('课程', r.c_id)) AS course_name
+        from my_study_record r
+        left join my_student s on r.stu_id = s.stu_id
+        left join my_sys_user u on s.user_id = u.user_id
+        left join my_course c on r.c_id = c.c_id
+    </sql>
+
+    <select id="selectMyStudyRecordList" parameterType="com.ruoyi.study.domain.MyStudyRecord" resultMap="MyStudyRecordResult">
+        <include refid="selectMyStudyRecordVo"/>
+        <where>
+            <if test="studentName != null and studentName != ''">
+                and u.real_name like concat('%', #{studentName}, '%')
+            </if>
+            <if test="courseName != null and courseName != ''">
+                and c.c_name like concat('%', #{courseName}, '%')
+            </if>
+            <if test="studyType != null">
+                and r.study_type = #{studyType}
+            </if>
+            <if test="studyDate != null">
+                and r.study_date = #{studyDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMyStudyRecordBySrId" parameterType="Long" resultMap="MyStudyRecordResult">
+        <include refid="selectMyStudyRecordVo"/>
+        where r.sr_id = #{srId}
+    </select>
+
+    <insert id="insertMyStudyRecord" parameterType="com.ruoyi.study.domain.MyStudyRecord" useGeneratedKeys="true" keyProperty="srId">
+        insert into my_study_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">stu_id,</if>
+            <if test="cId != null">c_id,</if>
+            <if test="studyType != null">study_type,</if>
+            <if test="studyDuration != null">study_duration,</if>
+            <if test="studyDate != null">study_date,</if>
+            <if test="progress != null">progress,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">#{stuId},</if>
+            <if test="cId != null">#{cId},</if>
+            <if test="studyType != null">#{studyType},</if>
+            <if test="studyDuration != null">#{studyDuration},</if>
+            <if test="studyDate != null">#{studyDate},</if>
+            <if test="progress != null">#{progress},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateMyStudyRecord" parameterType="com.ruoyi.study.domain.MyStudyRecord">
+        update my_study_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stuId != null">stu_id = #{stuId},</if>
+            <if test="cId != null">c_id = #{cId},</if>
+            <if test="studyType != null">study_type = #{studyType},</if>
+            <if test="studyDuration != null">study_duration = #{studyDuration},</if>
+            <if test="studyDate != null">study_date = #{studyDate},</if>
+            <if test="progress != null">progress = #{progress},</if>
+        </trim>
+        where sr_id = #{srId}
+    </update>
+
+    <delete id="deleteMyStudyRecordBySrId" parameterType="Long">
+        delete from my_study_record where sr_id = #{srId}
+    </delete>
+
+    <delete id="deleteMyStudyRecordBySrIds">
+        delete from my_study_record where sr_id in
+        <foreach collection="array" item="srId" open="(" separator="," close=")">
+            #{srId}
+        </foreach>
+    </delete>
+
+</mapper>

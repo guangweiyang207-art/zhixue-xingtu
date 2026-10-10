@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.study.mapper.MyErrorBookMapper">
+
+    <resultMap type="com.ruoyi.study.domain.MyErrorBook" id="MyErrorBookResult">
+        <result property="ebId" column="eb_id"/>
+        <result property="stuId" column="stu_id"/>
+        <result property="hqId" column="hq_id"/>
+        <result property="cId" column="c_id"/>
+        <result property="wrongAnswer" column="wrong_answer"/>
+        <result property="correctAnswer" column="correct_answer"/>
+        <result property="analysis" column="analysis"/>
+        <result property="tag" column="tag"/>
+        <result property="errorCount" column="error_count"/>
+        <result property="isMastered" column="is_mastered"/>
+        <result property="lastWrongTime" column="last_wrong_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectMyErrorBookVo">
+        select eb_id, stu_id, hq_id, c_id, wrong_answer, correct_answer, analysis, tag, error_count, is_mastered, last_wrong_time, create_time, update_time
+        from my_error_book
+    </sql>
+
+    <select id="selectMyErrorBookList" parameterType="com.ruoyi.study.domain.MyErrorBook" resultMap="MyErrorBookResult">
+        <include refid="selectMyErrorBookVo"/>
+        <where>
+            <if test="stuId != null">
+                and stu_id = #{stuId}
+            </if>
+            <if test="cId != null">
+                and c_id = #{cId}
+            </if>
+            <if test="tag != null and tag != ''">
+                and tag like concat('%', #{tag}, '%')
+            </if>
+            <if test="isMastered != null">
+                and is_mastered = #{isMastered}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMyErrorBookByEbId" parameterType="Long" resultMap="MyErrorBookResult">
+        <include refid="selectMyErrorBookVo"/>
+        where eb_id = #{ebId}
+    </select>
+
+    <insert id="insertMyErrorBook" parameterType="com.ruoyi.study.domain.MyErrorBook" useGeneratedKeys="true" keyProperty="ebId">
+        insert into my_error_book
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">stu_id,</if>
+            <if test="hqId != null">hq_id,</if>
+            <if test="cId != null">c_id,</if>
+            <if test="wrongAnswer != null and wrongAnswer != ''">wrong_answer,</if>
+            <if test="correctAnswer != null and correctAnswer != ''">correct_answer,</if>
+            <if test="analysis != null and analysis != ''">analysis,</if>
+            <if test="tag != null and tag != ''">tag,</if>
+            <if test="errorCount != null">error_count,</if>
+            <if test="isMastered != null">is_mastered,</if>
+            <if test="lastWrongTime != null">last_wrong_time,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">#{stuId},</if>
+            <if test="hqId != null">#{hqId},</if>
+            <if test="cId != null">#{cId},</if>
+            <if test="wrongAnswer != null and wrongAnswer != ''">#{wrongAnswer},</if>
+            <if test="correctAnswer != null and correctAnswer != ''">#{correctAnswer},</if>
+            <if test="analysis != null and analysis != ''">#{analysis},</if>
+            <if test="tag != null and tag != ''">#{tag},</if>
+            <if test="errorCount != null">#{errorCount},</if>
+            <if test="isMastered != null">#{isMastered},</if>
+            <if test="lastWrongTime != null">#{lastWrongTime},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateMyErrorBook" parameterType="com.ruoyi.study.domain.MyErrorBook">
+        update my_error_book
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stuId != null">stu_id = #{stuId},</if>
+            <if test="hqId != null">hq_id = #{hqId},</if>
+            <if test="cId != null">c_id = #{cId},</if>
+            <if test="wrongAnswer != null and wrongAnswer != ''">wrong_answer = #{wrongAnswer},</if>
+            <if test="correctAnswer != null and correctAnswer != ''">correct_answer = #{correctAnswer},</if>
+            <if test="analysis != null and analysis != ''">analysis = #{analysis},</if>
+            <if test="tag != null and tag != ''">tag = #{tag},</if>
+            <if test="errorCount != null">error_count = #{errorCount},</if>
+            <if test="isMastered != null">is_mastered = #{isMastered},</if>
+            <if test="lastWrongTime != null">last_wrong_time = #{lastWrongTime},</if>
+            update_time = sysdate()
+        </trim>
+        where eb_id = #{ebId}
+    </update>
+
+    <delete id="deleteMyErrorBookByEbId" parameterType="Long">
+        delete from my_error_book where eb_id = #{ebId}
+    </delete>
+
+    <delete id="deleteMyErrorBookByEbIds">
+        delete from my_error_book where eb_id in
+        <foreach collection="array" item="ebId" open="(" separator="," close=")">
+            #{ebId}
+        </foreach>
+    </delete>
+
+</mapper>

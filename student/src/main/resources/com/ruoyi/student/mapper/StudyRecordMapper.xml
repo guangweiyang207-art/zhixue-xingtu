@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.StudyRecordMapper">
+
+    <!-- ======================== 通用结果映射 ======================== -->
+    <resultMap id="StudyRecordRowResult" type="com.ruoyi.student.pojo.StudyRecordRow">
+        <result property="srId"           column="sr_id"/>
+        <result property="stuId"          column="stu_id"/>
+        <result property="cId"            column="c_id"/>
+        <result property="studyType"      column="study_type"/>
+        <result property="studyDuration"  column="study_duration"/>
+        <result property="studyDate"      column="study_date"/>
+        <result property="progress"       column="progress"/>
+        <result property="cName"          column="c_name"/>
+        <result property="courseType"     column="course_type"/>
+        <result property="courseTag"      column="course_tag"/>
+        <result property="difficulty"     column="difficulty"/>
+        <result property="resourceTitle"  column="resource_title"/>
+        <result property="resourceType"   column="resource_type"/>
+        <result property="realName"       column="real_name"/>
+        <result property="avatar"         column="avatar"/>
+        <result property="major"          column="major"/>
+        <result property="grade"          column="grade"/>
+        <result property="className"      column="class_name"/>
+        <result property="rankLevel"      column="rank_level"/>
+        <result property="rankScore"      column="rank_score"/>
+        <result property="totalQuestions" column="total_questions"/>
+        <result property="correctQuestions" column="correct_questions"/>
+        <result property="studyHours"     column="study_hours"/>
+        <result property="hwId"           column="hw_id"/>
+        <result property="shId"           column="sh_id"/>
+        <result property="submitTime"     column="submit_time"/>
+        <result property="title"          column="title"/>
+        <result property="content"        column="content"/>
+        <result property="studentScore"   column="student_score"/>
+        <result property="totalScore"     column="total_score"/>
+        <result property="homeworkStatus" column="homework_status"/>
+        <result property="teacherComment" column="teacher_comment"/>
+        <result property="correctTime"    column="correct_time"/>
+        <result property="deadline"       column="deadline"/>
+        <result property="questionCount"  column="question_count"/>
+    </resultMap>
+
+    <!-- ======================== 1. 基础展示：学生信息 + 课程 + 资源 ======================== -->
+
+    <!-- 查询学生基本信息（含 my_sys_user 关联） -->
+    <select id="getStudentInfo" resultMap="StudyRecordRowResult">
+        SELECT
+            s.stu_id, s.user_id, s.major, s.grade, s.class_name,
+            s.rank_level, s.rank_score, s.total_questions, s.correct_questions, s.study_hours,
+            u.real_name, u.avatar
+        FROM my_student s, my_sys_user u
+        WHERE s.user_id = u.user_id AND s.stu_id = #{stuId}
+    </select>
+
+    <!-- 查询学生的课程列表（含课程详情） -->
+    <select id="getStudentCourses" resultMap="StudyRecordRowResult">
+        SELECT
+            sc.sc_id, sc.stu_id, sc.c_id, sc.progress, sc.status AS course_status, sc.score,
+            c.c_name, c.type AS course_type, c.tag AS course_tag, c.difficulty
+        FROM my_student_course sc, my_course c
+        WHERE sc.c_id = c.c_id AND sc.stu_id = #{stuId}
+        ORDER BY sc.create_time DESC
+    </select>
+
+    <!-- 查询课程资源 -->
+    <select id="getCourseResources" resultMap="StudyRecordRowResult">
+        SELECT
+            re_id, c_id, resource_type, title AS resource_title, content, file_url, video_url
+        FROM my_course_resource
+        WHERE c_id = #{cId}
+        ORDER BY sort_order
+    </select>
+
+    <!-- ======================== 2. 做题业务 (study_type=3) ======================== -->
+
+    <!-- 学生做题记录（关联课程、作业、题目） -->
+    <select id="getPracticeRecords" resultMap="StudyRecordRowResult">
+        SELECT
+            sr.sr_id, sr.stu_id, sr.c_id, sr.study_type, sr.study_duration, sr.study_date,
+            c.c_name, c.type AS course_type, c.tag AS course_tag
+        FROM my_study_record sr, my_course c
+        WHERE sr.c_id = c.c_id
+          AND sr.stu_id = #{stuId}
+          AND sr.study_type = 3
+        ORDER BY sr.study_date DESC
+    </select>
+
+    <!-- 最近做题记录（最近10条已批改作业） -->
+    <select id="getRecentRecords" resultMap="StudyRecordRowResult">
+        SELECT
+            sh.submit_time, sh.score AS student_score, sh.teacher_comment, sh.correct_time,
+            hw.hw_id, hw.title, hw.content, hw.total_score, hw.deadline,
+            c.c_name, c.type AS course_type, c.tag AS course_tag,
+            (SELECT COUNT(*) FROM my_question q WHERE q.hw_id = hw.hw_id) AS question_count
+        FROM my_student_homework sh, my_homework hw, my_course c
+        WHERE sh.hw_id = hw.hw_id
+          AND hw.c_id = c.c_id
+          AND sh.stu_id = #{stuId}
+          AND sh.status = 2
+        ORDER BY sh.submit_time DESC
+        LIMIT 10
+    </select>
+
+    <!-- 全部做题记录 -->
+    <select id="getAllRecords" resultMap="StudyRecordRowResult">
+        SELECT
+            sh.submit_time, sh.score AS student_score, sh.teacher_comment, sh.correct_time,
+            hw.hw_id, hw.title, hw.content, hw.total_score, hw.deadline,
+            c.c_name, c.type AS course_type, c.tag AS course_tag,
+            (SELECT COUNT(*) FROM my_question q WHERE q.hw_id = hw.hw_id) AS question_count
+        FROM my_student_homework sh, my_homework hw, my_course c
+        WHERE sh.hw_id = hw.hw_id
+          AND hw.c_id = c.c_id
+          AND sh.stu_id = #{stuId}
+          AND sh.status = 2
+        ORDER BY sh.submit_time DESC
+    </select>
+
+    <!-- 错题本统计 -->
+    <select id="getErrorBookStats" resultType="java.util.Map">
+        SELECT
+            c.c_id, c.c_name, c.type AS course_type,
+            COUNT(eb.eb_id) AS error_count,
+            SUM(CASE WHEN eb.is_mastered = 1 THEN 1 ELSE 0 END) AS mastered_count
+        FROM my_error_book eb, my_course c
+        WHERE eb.c_id = c.c_id AND eb.stu_id = #{stuId}
+        GROUP BY c.c_id, c.c_name, c.type
+        ORDER BY error_count DESC
+    </select>
+
+    <!-- ======================== 3. 课程进度业务 ======================== -->
+
+    <!-- 课程学习进度概览 -->
+    <select id="getCourseProgress" resultType="java.util.Map">
+        SELECT
+            sc.c_id, c.c_name, c.type AS course_type, c.tag AS course_tag,
+            sc.progress, sc.status,
+            sc.score, sc.remark,
+            (SELECT COUNT(*) FROM my_course_resource cr WHERE cr.c_id = c.c_id) AS resource_count
+        FROM my_student_course sc, my_course c
+        WHERE sc.c_id = c.c_id AND sc.stu_id = #{stuId}
+        ORDER BY sc.update_time DESC
+    </select>
+
+    <!-- ======================== 4. 统计业务 ======================== -->
+
+    <!-- 学情报表 -->
+    <select id="getStudyReports" resultType="java.util.Map">
+        SELECT
+            report_id, report_type, report_date,
+            study_duration, completed_courses, completed_homework,
+            correct_rate, rank_score_change,
+            weak_points, strengths, suggestions
+        FROM my_study_report
+        WHERE stu_id = #{stuId}
+        ORDER BY report_date DESC, report_type ASC
+        LIMIT 20
+    </select>
+
+    <!-- 段位配置 -->
+    <select id="getRankConfigs" resultType="java.util.Map">
+        SELECT rank_id, rank_name, min_score, max_score, color, description
+        FROM my_rank_config
+        ORDER BY sort_order
+    </select>
+
+    <!-- 最新学情摘要 -->
+    <select id="getLatestReport" resultType="java.util.Map">
+        SELECT report_id, report_type, report_date, study_duration,
+               completed_homework, correct_rate, rank_score_change,
+               weak_points, strengths, suggestions
+        FROM my_study_report
+        WHERE stu_id = #{stuId}
+        ORDER BY report_date DESC, report_type DESC
+        LIMIT 1
+    </select>
+
+    <!-- ======================== 5. 辅助：任务提醒 ======================== -->
+
+    <!-- 待办任务提醒 -->
+    <select id="getTaskReminders" resultType="java.util.Map">
+        SELECT
+            tr_id, task_type, task_title, task_content,
+            remind_time, repeat_type, is_read, related_id
+        FROM my_task_reminder
+        WHERE stu_id = #{stuId} AND status = 1
+        ORDER BY remind_time ASC
+        LIMIT 20
+    </select>
+
+    <!-- 未完成任务（待提交作业） -->
+    <select id="getPendingHomework" resultType="java.util.Map">
+        SELECT
+            sh.sh_id, sh.hw_id, hw.title, hw.content, hw.deadline, hw.total_score,
+            c.c_name, sh.status, sh.submit_time
+        FROM my_student_homework sh, my_homework hw, my_course c
+        WHERE sh.hw_id = hw.hw_id
+          AND hw.c_id = c.c_id
+          AND sh.stu_id = #{stuId}
+          AND sh.status IN (0, 1)
+        ORDER BY hw.deadline ASC
+    </select>
+
+    <!-- ======================== 6. 学习报告实时统计 ======================== -->
+
+    <!-- 已批改作业数 -->
+    <select id="countGradedHomework" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM my_student_homework
+        WHERE stu_id = #{stuId} AND status = 2
+    </select>
+
+    <!-- 平均正确率 -->
+    <select id="getAvgCorrectRate" resultType="java.lang.Integer">
+        SELECT ROUND(AVG(sh.score * 100.0 / hw.total_score))
+        FROM my_student_homework sh, my_homework hw
+        WHERE sh.hw_id = hw.hw_id
+          AND sh.stu_id = #{stuId}
+          AND sh.status = 2
+          AND hw.total_score > 0
+          AND sh.score IS NOT NULL
+    </select>
+
+    <!-- 累计学习时长(分钟) -->
+    <select id="getStudyDurationSum" resultType="java.lang.Integer">
+        SELECT COALESCE(SUM(study_duration), 0)
+        FROM my_study_record
+        WHERE stu_id = #{stuId}
+    </select>
+
+    <!-- 近7天每日完成作业数(按批改时间,闭环联动) -->
+    <select id="getWeekHomeworkTrend" resultType="java.util.Map">
+        SELECT
+            DATE_FORMAT(COALESCE(sh.correct_time, sh.submit_time), '%Y-%m-%d') AS day,
+            COUNT(*) AS cnt
+        FROM my_student_homework sh
+        WHERE sh.stu_id = #{stuId}
+          AND sh.status = 2
+          AND COALESCE(sh.correct_time, sh.submit_time) >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        GROUP BY DATE_FORMAT(COALESCE(sh.correct_time, sh.submit_time), '%Y-%m-%d')
+        ORDER BY day ASC
+    </select>
+
+    <!-- 各科掌握情况(按课程类型统计平均得分率) -->
+    <select id="getSubjectMastery" resultType="java.util.Map">
+        SELECT
+            c.type AS course_type,
+            ROUND(AVG(sh.score * 100.0 / hw.total_score)) AS avg_rate
+        FROM my_student_homework sh, my_homework hw, my_course c
+        WHERE sh.hw_id = hw.hw_id
+          AND hw.c_id = c.c_id
+          AND sh.stu_id = #{stuId}
+          AND sh.status = 2
+          AND hw.total_score > 0
+          AND sh.score IS NOT NULL
+        GROUP BY c.type
+    </select>
+
+</mapper>

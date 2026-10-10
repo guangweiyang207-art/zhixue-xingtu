@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homework.mapper.MyHomeworkMapper">
+
+    <resultMap type="com.ruoyi.homework.domain.MyHomework" id="MyHomeworkResult">
+        <result property="hwId" column="hw_id"/>
+        <result property="stdId" column="std_id"/>
+        <result property="cId" column="c_id"/>
+        <result property="teacherId" column="teacher_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="type" column="type"/>
+        <result property="totalScore" column="total_score"/>
+        <result property="deadline" column="deadline"/>
+        <result property="status" column="status"/>
+        <result property="studentName" column="student_name"/>
+        <result property="courseName" column="course_name"/>
+        <result property="teacherName" column="teacher_name"/>
+        <result property="questionCount" column="question_count"/>
+        <result property="submitCount" column="submit_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectMyHomeworkVo">
+        select h.hw_id, h.c_id, h.teacher_id, h.title, h.content, h.type, h.total_score, h.deadline, h.status, h.create_time, h.update_time,
+               c.c_name as course_name, tu.real_name as teacher_name,
+               count(distinct q.q_id) as question_count,
+               count(distinct sh.stu_id) as submit_count
+        from my_homework h
+        left join my_course c on h.c_id = c.c_id
+        left join my_teacher t on h.teacher_id = t.teacher_id
+        left join my_sys_user tu on t.user_id = tu.user_id
+        left join my_homework_bank hqb on h.hw_id = hqb.hw_id
+        left join my_question q on hqb.b_id = q.q_id
+        left join my_student_homework sh on h.hw_id = sh.hw_id and sh.status >= 1
+    </sql>
+
+    <select id="selectMyHomeworkList" parameterType="com.ruoyi.homework.domain.MyHomework" resultMap="MyHomeworkResult">
+        <include refid="selectMyHomeworkVo"/>
+        <where>
+            <if test="title != null and title != ''">
+                and h.title like concat('%', #{title}, '%')
+            </if>
+            <if test="cId != null">
+                and h.c_id = #{cId}
+            </if>
+            <if test="teacherId != null">
+                and h.teacher_id = #{teacherId}
+            </if>
+            <if test="type != null">
+                and h.type = #{type}
+            </if>
+            <if test="status != null">
+                and h.status = #{status}
+            </if>
+        </where>
+        group by h.hw_id
+    </select>
+
+    <select id="selectMyHomeworkByHwId" parameterType="Long" resultMap="MyHomeworkResult">
+        <include refid="selectMyHomeworkVo"/>
+        where h.hw_id = #{hwId}
+        group by h.hw_id
+    </select>
+
+    <insert id="insertMyHomework" parameterType="com.ruoyi.homework.domain.MyHomework" useGeneratedKeys="true" keyProperty="hwId">
+        insert into my_homework
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stdId != null">std_id,</if>
+            <if test="cId != null">c_id,</if>
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="type != null">type,</if>
+            <if test="totalScore != null">total_score,</if>
+            <if test="deadline != null">deadline,</if>
+            <if test="status != null">status,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stdId != null">#{stdId},</if>
+            <if test="cId != null">#{cId},</if>
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="type != null">#{type},</if>
+            <if test="totalScore != null">#{totalScore},</if>
+            <if test="deadline != null">#{deadline},</if>
+            <if test="status != null">#{status},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateMyHomework" parameterType="com.ruoyi.homework.domain.MyHomework">
+        update my_homework
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cId != null">c_id = #{cId},</if>
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="totalScore != null">total_score = #{totalScore},</if>
+            <if test="deadline != null">deadline = #{deadline},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = sysdate()
+        </trim>
+        where hw_id = #{hwId}
+    </update>
+
+    <delete id="deleteMyHomeworkByHwId" parameterType="Long">
+        delete from my_homework where hw_id = #{hwId}
+    </delete>
+
+    <delete id="deleteMyHomeworkByHwIds">
+        delete from my_homework where hw_id in
+        <foreach collection="array" item="hwId" open="(" separator="," close=")">
+            #{hwId}
+        </foreach>
+    </delete>
+
+    <!-- 按作业ID强写 status(老师改作业状态时,只需知道是哪个作业;也兼容 hw_id+std_id 双匹配)
+         默认按 hw_id 更新,若 affected=0,Controller 再尝试按 (hw_id, std_id) 兜底 -->
+    <update id="updateMyHomeworkStatusByStu" parameterType="com.ruoyi.homework.domain.MyHomework">
+        update my_homework
+        set status = #{status},
+            update_time = sysdate()
+        where hw_id = #{hwId}
+    </update>
+
+    <!-- 精确按 (hw_id, std_id) 兜底更新 -->
+    <update id="updateMyHomeworkStatusByHwIdAndStuId" parameterType="com.ruoyi.homework.domain.MyHomework">
+        update my_homework
+        set status = #{status},
+            update_time = sysdate()
+        where hw_id = #{hwId} and std_id = #{stdId}
+    </update>
+
+</mapper>

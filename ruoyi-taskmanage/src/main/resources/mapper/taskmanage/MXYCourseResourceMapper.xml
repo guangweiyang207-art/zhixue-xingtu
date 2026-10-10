@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYCourseResourceMapper">
+
+    <!-- my_course_resource 实际列: re_id, c_id, resource_type, title, content, file_url, video_url, homework, sort_order, create_time, tag -->
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.CourseResource">
+        <id     column="re_id"         property="resourceId"     />
+        <result column="c_id"          property="courseId"       />
+        <result column="resource_type" property="resourceType"   />
+        <result column="title"         property="resourceName"   />
+        <result column="content"       property="content"        />
+        <result column="file_url"      property="resourceUrl"    />
+        <result column="video_url"     property="videoUrl"       />
+        <result column="homework"      property="homework"       />
+        <result column="sort_order"    property="sortOrder"      />
+        <result column="tag"           property="tag"            />
+        <result column="create_time"   property="createTime"     />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        re_id, c_id, resource_type, title, content, file_url, video_url, homework, sort_order, tag, create_time
+    </sql>
+
+    <select id="selectCourseResourceList" parameterType="com.ruoyi.taskmanage.domain.CourseResource" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM my_course_resource
+        <where>
+            <if test="resourceName != null and resourceName != ''">AND title LIKE CONCAT('%', #{resourceName}, '%')</if>
+            <if test="courseId != null">                              AND c_id = #{courseId}</if>
+            <if test="resourceType != null">                          AND resource_type = #{resourceType}</if>
+        </where>
+        ORDER BY sort_order ASC, create_time DESC
+    </select>
+
+    <select id="selectCourseResourceById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM my_course_resource WHERE re_id = #{resourceId}
+    </select>
+
+    <insert id="insertCourseResource" parameterType="com.ruoyi.taskmanage.domain.CourseResource" useGeneratedKeys="true" keyProperty="resourceId">
+        INSERT INTO my_course_resource (c_id, resource_type, title, content, file_url, video_url, homework, sort_order, tag, create_time)
+        VALUES (#{courseId}, #{resourceType}, #{resourceName}, #{content}, #{resourceUrl}, #{videoUrl}, #{homework}, #{sortOrder}, #{tag}, #{createTime})
+    </insert>
+
+    <update id="updateCourseResource" parameterType="com.ruoyi.taskmanage.domain.CourseResource">
+        UPDATE my_course_resource
+        <set>
+            <if test="courseId     != null">c_id          = #{courseId},</if>
+            <if test="resourceType != null">resource_type = #{resourceType},</if>
+            <if test="resourceName != null">title         = #{resourceName},</if>
+            <if test="content      != null">content       = #{content},</if>
+            <if test="resourceUrl  != null">file_url      = #{resourceUrl},</if>
+            <if test="videoUrl     != null">video_url     = #{videoUrl},</if>
+            <if test="homework     != null">homework      = #{homework},</if>
+            <if test="sortOrder    != null">sort_order    = #{sortOrder},</if>
+            <if test="tag          != null">tag           = #{tag},</if>
+        </set>
+        WHERE re_id = #{resourceId}
+    </update>
+
+    <delete id="deleteCourseResourceById">
+        DELETE FROM my_course_resource WHERE re_id = #{resourceId}
+    </delete>
+
+</mapper>

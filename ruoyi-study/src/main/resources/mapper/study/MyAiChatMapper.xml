@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.study.mapper.MyAiChatMapper">
+
+    <resultMap type="com.ruoyi.study.domain.MyAiChat" id="MyAiChatResult">
+        <result property="chatId" column="chat_id"/>
+        <result property="stuId" column="stu_id"/>
+        <result property="userName" column="real_name"/>
+        <result property="sessionId" column="session_id"/>
+        <result property="question" column="question"/>
+        <result property="answer" column="answer"/>
+        <result property="questionType" column="question_type"/>
+        <result property="isSatisfied" column="is_satisfied"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectMyAiChatVo">
+        select c.chat_id, c.stu_id, u.real_name as real_name, c.session_id, c.question, c.answer, c.question_type, c.is_satisfied, c.create_time
+        from my_ai_chat c
+        left join my_student s on c.stu_id = s.stu_id
+        left join my_sys_user u on s.user_id = u.user_id
+    </sql>
+
+    <select id="selectMyAiChatList" parameterType="com.ruoyi.study.domain.MyAiChat" resultMap="MyAiChatResult">
+        <include refid="selectMyAiChatVo"/>
+        <where>
+            <if test="stuId != null">
+                and c.stu_id = #{stuId}
+            </if>
+            <if test="sessionId != null and sessionId != ''">
+                and c.session_id = #{sessionId}
+            </if>
+            <if test="questionType != null">
+                and c.question_type = #{questionType}
+            </if>
+            <if test="isSatisfied != null">
+                and c.is_satisfied = #{isSatisfied}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMyAiChatByChatId" parameterType="Long" resultMap="MyAiChatResult">
+        <include refid="selectMyAiChatVo"/>
+        where chat_id = #{chatId}
+    </select>
+
+    <insert id="insertMyAiChat" parameterType="com.ruoyi.study.domain.MyAiChat" useGeneratedKeys="true" keyProperty="chatId">
+        insert into my_ai_chat
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">stu_id,</if>
+            <if test="sessionId != null and sessionId != ''">session_id,</if>
+            <if test="question != null and question != ''">question,</if>
+            <if test="answer != null and answer != ''">answer,</if>
+            <if test="questionType != null">question_type,</if>
+            <if test="isSatisfied != null">is_satisfied,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">#{stuId},</if>
+            <if test="sessionId != null and sessionId != ''">#{sessionId},</if>
+            <if test="question != null and question != ''">#{question},</if>
+            <if test="answer != null and answer != ''">#{answer},</if>
+            <if test="questionType != null">#{questionType},</if>
+            <if test="isSatisfied != null">#{isSatisfied},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateMyAiChat" parameterType="com.ruoyi.study.domain.MyAiChat">
+        update my_ai_chat
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stuId != null">stu_id = #{stuId},</if>
+            <if test="sessionId != null and sessionId != ''">session_id = #{sessionId},</if>
+            <if test="question != null and question != ''">question = #{question},</if>
+            <if test="answer != null and answer != ''">answer = #{answer},</if>
+            <if test="questionType != null">question_type = #{questionType},</if>
+            <if test="isSatisfied != null">is_satisfied = #{isSatisfied},</if>
+        </trim>
+        where chat_id = #{chatId}
+    </update>
+
+    <delete id="deleteMyAiChatByChatId" parameterType="Long">
+        delete from my_ai_chat where chat_id = #{chatId}
+    </delete>
+
+    <delete id="deleteMyAiChatByChatIds">
+        delete from my_ai_chat where chat_id in
+        <foreach collection="array" item="chatId" open="(" separator="," close=")">
+            #{chatId}
+        </foreach>
+    </delete>
+
+</mapper>

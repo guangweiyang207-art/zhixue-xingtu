@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYQuestionMapper">
+
+    <!-- my_question 实际列: q_id, hw_id, question_type, question_content, options, correct_answer, score, difficulty, sort_order -->
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.Question">
+        <id     column="q_id"              property="qId"              />
+        <result column="hw_id"             property="hwId"             />
+        <result column="question_type"     property="questionType"     />
+        <result column="question_content"  property="questionContent"  />
+        <result column="options"           property="options"          />
+        <result column="correct_answer"    property="correctAnswer"    />
+        <result column="score"             property="score"            />
+        <result column="difficulty"        property="difficulty"       />
+        <result column="sort_order"        property="sortOrder"        />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        q_id, hw_id, question_type, question_content, options, correct_answer, score, difficulty, sort_order
+    </sql>
+
+    <select id="selectQuestionList" parameterType="com.ruoyi.taskmanage.domain.Question" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM my_question
+        <where>
+            <if test="hwId         != null">AND hw_id          = #{hwId}</if>
+            <if test="questionType != null">AND question_type  = #{questionType}</if>
+        </where>
+        ORDER BY sort_order ASC, q_id ASC
+    </select>
+
+    <select id="selectQuestionById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM my_question WHERE q_id = #{qId}
+    </select>
+
+    <insert id="insertQuestion" parameterType="com.ruoyi.taskmanage.domain.Question" useGeneratedKeys="true" keyProperty="qId">
+        INSERT INTO my_question (hw_id, question_type, question_content, options, correct_answer, score, difficulty, sort_order)
+        VALUES (#{hwId}, #{questionType}, #{questionContent}, #{options}, #{correctAnswer}, #{score}, #{difficulty}, #{sortOrder})
+    </insert>
+
+    <update id="updateQuestion" parameterType="com.ruoyi.taskmanage.domain.Question">
+        UPDATE my_question
+        <set>
+            <if test="hwId           != null">hw_id            = #{hwId},</if>
+            <if test="questionType   != null">question_type    = #{questionType},</if>
+            <if test="questionContent!= null">question_content = #{questionContent},</if>
+            <if test="options        != null">options          = #{options},</if>
+            <if test="correctAnswer  != null">correct_answer   = #{correctAnswer},</if>
+            <if test="score          != null">score            = #{score},</if>
+            <if test="difficulty     != null">difficulty       = #{difficulty},</if>
+            <if test="sortOrder      != null">sort_order       = #{sortOrder},</if>
+        </set>
+        WHERE q_id = #{qId}
+    </update>
+
+    <delete id="deleteQuestionById">
+        DELETE FROM my_question WHERE q_id = #{qId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.notification.mapper.ReminderMapper">
+
+    <resultMap id="ReminderRowResult" type="com.ruoyi.notification.pojo.ReminderRow">
+        <id     property="trId"        column="tr_id"/>
+        <result property="taskTitle"   column="task_title"/>
+        <result property="taskContent" column="task_content"/>
+        <result property="remindTime"  column="remind_time"/>
+        <result property="repeatType"  column="repeat_type"/>
+        <result property="status"      column="status"/>
+    </resultMap>
+
+    <select id="getReminders" resultMap="ReminderRowResult">
+        SELECT tr_id, task_title, task_content, remind_time, repeat_type, status
+        FROM my_task_reminder
+        WHERE stu_id = #{stuId}
+        ORDER BY remind_time DESC
+    </select>
+
+    <select id="getReminderById" resultMap="ReminderRowResult">
+        SELECT tr_id, task_title, task_content, remind_time, repeat_type, status
+        FROM my_task_reminder
+        WHERE tr_id = #{trId}
+    </select>
+
+    <select id="countReminders" resultType="int">
+        SELECT COUNT(*)
+        FROM my_task_reminder
+        WHERE stu_id = #{stuId} AND status = 1
+    </select>
+
+    <insert id="addReminder">
+        INSERT INTO my_task_reminder (stu_id, task_type, task_title, task_content, remind_time, repeat_type, status)
+        VALUES (#{stuId}, 3, #{vo.title}, #{vo.desc}, #{remindTime}, #{repeatType}, 1)
+    </insert>
+
+    <update id="updateReminder">
+        UPDATE my_task_reminder
+        SET task_title = #{vo.title},
+            task_content = #{vo.desc},
+            remind_time = #{remindTime},
+            repeat_type = #{repeatType}
+        WHERE tr_id = #{trId}
+    </update>
+
+    <delete id="deleteReminder">
+        DELETE FROM my_task_reminder WHERE tr_id = #{trId}
+    </delete>
+
+</mapper>

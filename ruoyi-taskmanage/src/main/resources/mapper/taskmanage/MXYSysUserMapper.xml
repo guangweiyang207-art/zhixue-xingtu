@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYSysUserMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.SysUser">
+        <id     column="user_id"     property="userId"     />
+        <result column="username"    property="username"   />
+        <result column="password"    property="password"   />
+        <result column="real_name"   property="realName"   />
+        <result column="avatar"      property="avatar"     />
+        <result column="sex"         property="sex"        />
+        <result column="age"         property="age"        />
+        <result column="phone"       property="phone"      />
+        <result column="email"       property="email"      />
+        <result column="user_type"   property="userType"   />
+        <result column="status"      property="status"     />
+        <result column="is_deleted"  property="isDeleted"  />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="remark"      property="remark"     />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id, username, password, real_name, avatar, sex, age, phone, email,
+        user_type, status, is_deleted, create_time, update_time, remark
+    </sql>
+
+    <select id="selectSysUserList" parameterType="com.ruoyi.taskmanage.domain.SysUser" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM my_sys_user
+        <where>
+            <if test="username != null and username != ''">AND username LIKE CONCAT('%', #{username}, '%')</if>
+            <if test="userType != null">AND user_type = #{userType}</if>
+            <if test="status   != null">AND status    = #{status}</if>
+            <if test="isDeleted != null">AND is_deleted = #{isDeleted}</if>
+        </where>
+        ORDER BY user_id DESC
+    </select>
+
+    <select id="selectSysUserById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM my_sys_user WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectSysUserByUsername" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM my_sys_user WHERE username = #{username} AND is_deleted = 0 LIMIT 1
+    </select>
+
+    <insert id="insertSysUser" parameterType="com.ruoyi.taskmanage.domain.SysUser" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO my_sys_user (username, password, real_name, avatar, sex, age, phone, email, user_type, status, is_deleted, create_time, update_time, remark)
+        VALUES (#{username}, #{password}, #{realName}, #{avatar}, #{sex}, #{age}, #{phone}, #{email}, #{userType}, #{status}, #{isDeleted}, #{createTime}, #{updateTime}, #{remark})
+    </insert>
+
+    <update id="updateSysUser" parameterType="com.ruoyi.taskmanage.domain.SysUser">
+        UPDATE my_sys_user
+        <set>
+            <if test="username  != null">username  = #{username},</if>
+            <if test="password  != null">password  = #{password},</if>
+            <if test="realName  != null">real_name = #{realName},</if>
+            <if test="avatar    != null">avatar    = #{avatar},</if>
+            <if test="sex       != null">sex       = #{sex},</if>
+            <if test="age       != null">age       = #{age},</if>
+            <if test="phone     != null">phone     = #{phone},</if>
+            <if test="email     != null">email     = #{email},</if>
+            <if test="userType  != null">user_type = #{userType},</if>
+            <if test="status    != null">status    = #{status},</if>
+            <if test="isDeleted != null">is_deleted= #{isDeleted},</if>
+            <if test="updateTime!= null">update_time= #{updateTime},</if>
+            <if test="remark    != null">remark    = #{remark},</if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteSysUserById">
+        DELETE FROM my_sys_user WHERE user_id = #{userId}
+    </delete>
+
+    <!-- 仅更新密码(明文转 BCrypt 后写回) -->
+    <update id="updateSysUserPassword" parameterType="com.ruoyi.taskmanage.domain.SysUser">
+        UPDATE my_sys_user
+        <set>
+            <if test="password   != null">password    = #{password},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+</mapper>

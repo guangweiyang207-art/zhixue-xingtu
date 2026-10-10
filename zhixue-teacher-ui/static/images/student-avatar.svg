@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- 卡通学生头像 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFD7A8"/>
+      <stop offset="100%" stop-color="#FFB074"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3D2C1E"/>
+      <stop offset="100%" stop-color="#6B4A2D"/>
+    </linearGradient>
+    <linearGradient id="shirt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF8FA3"/>
+      <stop offset="100%" stop-color="#E85A78"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景圆 -->
+  <circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+
+  <!-- 肩膀/上衣(校服风格) -->
+  <path d="M 25 200
+           Q 25 145 75 138
+           L 125 138
+           Q 175 145 175 200 Z"
+        fill="url(#shirt)"/>
+
+  <!-- 衣领 -->
+  <path d="M 80 140 L 100 168 L 120 140 Z" fill="#FFFFFF"/>
+
+  <!-- 校服领结/纽扣 -->
+  <circle cx="100" cy="160" r="3.5" fill="#E85A78"/>
+
+  <!-- 脖子 -->
+  <rect x="88" y="120" width="24" height="22" fill="#F5C9A0"/>
+
+  <!-- 脸 -->
+  <ellipse cx="100" cy="92" rx="42" ry="48" fill="#FFE0C0"/>
+
+  <!-- 头发(刘海+后发) -->
+  <path d="M 58 78
+           Q 58 38 100 38
+           Q 142 38 142 78
+           Q 142 70 130 66
+           Q 120 78 100 76
+           Q 80 78 70 66
+           Q 58 70 58 78 Z"
+        fill="url(#hair)"/>
+
+  <!-- 两侧发丝 -->
+  <path d="M 58 78 Q 56 100 62 120 L 70 120 Q 64 100 66 80 Z" fill="url(#hair)"/>
+  <path d="M 142 78 Q 144 100 138 120 L 130 120 Q 136 100 134 80 Z" fill="url(#hair)"/>
+
+  <!-- 耳朵 -->
+  <ellipse cx="58" cy="95" rx="5" ry="8" fill="#FFD4A8"/>
+  <ellipse cx="142" cy="95" rx="5" ry="8" fill="#FFD4A8"/>
+
+  <!-- 眼睛 -->
+  <ellipse cx="82" cy="95" rx="4.5" ry="6" fill="#2C2118"/>
+  <ellipse cx="118" cy="95" rx="4.5" ry="6" fill="#2C2118"/>
+  <!-- 眼睛高光 -->
+  <circle cx="83.5" cy="92" r="1.6" fill="#FFFFFF"/>
+  <circle cx="119.5" cy="92" r="1.6" fill="#FFFFFF"/>
+
+  <!-- 腮红 -->
+  <ellipse cx="72" cy="108" rx="6" ry="3.5" fill="#FFB3B3" opacity="0.7"/>
+  <ellipse cx="128" cy="108" rx="6" ry="3.5" fill="#FFB3B3" opacity="0.7"/>
+
+  <!-- 鼻子 -->
+  <path d="M 100 100 Q 98 108 100 110 Q 102 108 100 100" fill="#E8B58E" opacity="0.7"/>
+
+  <!-- 嘴 -->
+  <path d="M 90 118 Q 100 124 110 118" stroke="#C95C5C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

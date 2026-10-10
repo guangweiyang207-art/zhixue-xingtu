@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.study.mapper.MyStudyReportMapper">
+
+    <resultMap type="com.ruoyi.study.domain.MyStudyReport" id="MyStudyReportResult">
+        <result property="reportId" column="report_id"/>
+        <result property="stuId" column="stu_id"/>
+        <result property="reportType" column="report_type"/>
+        <result property="reportDate" column="report_date"/>
+        <result property="studyDuration" column="study_duration"/>
+        <result property="completedCourses" column="completed_courses"/>
+        <result property="completedHomework" column="completed_homework"/>
+        <result property="correctRate" column="correct_rate"/>
+        <result property="rankScoreChange" column="rank_score_change"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectMyStudyReportVo">
+        select report_id, stu_id, report_type, report_date, study_duration, completed_courses, completed_homework, correct_rate, rank_score_change, create_time
+        from my_study_report
+    </sql>
+
+    <select id="selectMyStudyReportList" parameterType="com.ruoyi.study.domain.MyStudyReport" resultMap="MyStudyReportResult">
+        <include refid="selectMyStudyReportVo"/>
+        <where>
+            <if test="stuId != null">
+                and stu_id = #{stuId}
+            </if>
+            <if test="reportType != null">
+                and report_type = #{reportType}
+            </if>
+            <if test="reportDate != null">
+                and report_date = #{reportDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMyStudyReportByReportId" parameterType="Long" resultMap="MyStudyReportResult">
+        <include refid="selectMyStudyReportVo"/>
+        where report_id = #{reportId}
+    </select>
+
+    <insert id="insertMyStudyReport" parameterType="com.ruoyi.study.domain.MyStudyReport" useGeneratedKeys="true" keyProperty="reportId">
+        insert into my_study_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">stu_id,</if>
+            <if test="reportType != null">report_type,</if>
+            <if test="reportDate != null">report_date,</if>
+            <if test="studyDuration != null">study_duration,</if>
+            <if test="completedCourses != null">completed_courses,</if>
+            <if test="completedHomework != null">completed_homework,</if>
+            <if test="correctRate != null">correct_rate,</if>
+            <if test="rankScoreChange != null">rank_score_change,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">#{stuId},</if>
+            <if test="reportType != null">#{reportType},</if>
+            <if test="reportDate != null">#{reportDate},</if>
+            <if test="studyDuration != null">#{studyDuration},</if>
+            <if test="completedCourses != null">#{completedCourses},</if>
+            <if test="completedHomework != null">#{completedHomework},</if>
+            <if test="correctRate != null">#{correctRate},</if>
+            <if test="rankScoreChange != null">#{rankScoreChange},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateMyStudyReport" parameterType="com.ruoyi.study.domain.MyStudyReport">
+        update my_study_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stuId != null">stu_id = #{stuId},</if>
+            <if test="reportType != null">report_type = #{reportType},</if>
+            <if test="reportDate != null">report_date = #{reportDate},</if>
+            <if test="studyDuration != null">study_duration = #{studyDuration},</if>
+            <if test="completedCourses != null">completed_courses = #{completedCourses},</if>
+            <if test="completedHomework != null">completed_homework = #{completedHomework},</if>
+            <if test="correctRate != null">correct_rate = #{correctRate},</if>
+            <if test="rankScoreChange != null">rank_score_change = #{rankScoreChange},</if>
+        </trim>
+        where report_id = #{reportId}
+    </update>
+
+    <delete id="deleteMyStudyReportByReportId" parameterType="Long">
+        delete from my_study_report where report_id = #{reportId}
+    </delete>
+
+    <delete id="deleteMyStudyReportByReportIds">
+        delete from my_study_report where report_id in
+        <foreach collection="array" item="reportId" open="(" separator="," close=")">
+            #{reportId}
+        </foreach>
+    </delete>
+
+</mapper>

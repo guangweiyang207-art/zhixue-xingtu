@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.study.mapper.MyTaskReminderMapper">
+
+    <resultMap type="com.ruoyi.study.domain.MyTaskReminder" id="MyTaskReminderResult">
+        <result property="trId" column="tr_id"/>
+        <result property="stuId" column="stu_id"/>
+        <result property="taskType" column="task_type"/>
+        <result property="taskTitle" column="task_title"/>
+        <result property="taskContent" column="task_content"/>
+        <result property="remindTime" column="remind_time"/>
+        <result property="repeatType" column="repeat_type"/>
+        <result property="isRead" column="is_read"/>
+        <result property="status" column="status"/>
+        <result property="relatedId" column="related_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="studentName" column="student_name"/>
+    </resultMap>
+
+    <sql id="selectMyTaskReminderVo">
+        select t.tr_id, t.stu_id, t.task_type, t.task_title, t.task_content, t.remind_time, t.repeat_type, t.is_read, t.status, t.related_id, t.create_time, t.update_time,
+               su.real_name as student_name
+        from my_task_reminder t
+        left join my_student s on t.stu_id = s.stu_id
+        left join my_sys_user su on s.user_id = su.user_id
+    </sql>
+
+    <select id="selectMyTaskReminderList" parameterType="com.ruoyi.study.domain.MyTaskReminder" resultMap="MyTaskReminderResult">
+        <include refid="selectMyTaskReminderVo"/>
+        <where>
+            <if test="stuId != null">
+                and t.stu_id = #{stuId}
+            </if>
+            <if test="studentName != null and studentName != ''">
+                and su.real_name like concat('%', #{studentName}, '%')
+            </if>
+            <if test="taskType != null">
+                and t.task_type = #{taskType}
+            </if>
+            <if test="taskTitle != null and taskTitle != ''">
+                and t.task_title like concat('%', #{taskTitle}, '%')
+            </if>
+            <if test="isRead != null">
+                and t.is_read = #{isRead}
+            </if>
+            <if test="status != null">
+                and t.status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMyTaskReminderByTrId" parameterType="Long" resultMap="MyTaskReminderResult">
+        <include refid="selectMyTaskReminderVo"/>
+        where t.tr_id = #{trId}
+    </select>
+
+    <insert id="insertMyTaskReminder" parameterType="com.ruoyi.study.domain.MyTaskReminder" useGeneratedKeys="true" keyProperty="trId">
+        insert into my_task_reminder
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">stu_id,</if>
+            <if test="taskType != null">task_type,</if>
+            <if test="taskTitle != null and taskTitle != ''">task_title,</if>
+            <if test="taskContent != null and taskContent != ''">task_content,</if>
+            <if test="remindTime != null">remind_time,</if>
+            <if test="repeatType != null">repeat_type,</if>
+            <if test="isRead != null">is_read,</if>
+            <if test="status != null">status,</if>
+            <if test="relatedId != null">related_id,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">#{stuId},</if>
+            <if test="taskType != null">#{taskType},</if>
+            <if test="taskTitle != null and taskTitle != ''">#{taskTitle},</if>
+            <if test="taskContent != null and taskContent != ''">#{taskContent},</if>
+            <if test="remindTime != null">#{remindTime},</if>
+            <if test="repeatType != null">#{repeatType},</if>
+            <if test="isRead != null">#{isRead},</if>
+            <if test="status != null">#{status},</if>
+            <if test="relatedId != null">#{relatedId},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateMyTaskReminder" parameterType="com.ruoyi.study.domain.MyTaskReminder">
+        update my_task_reminder
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stuId != null">stu_id = #{stuId},</if>
+            <if test="taskType != null">task_type = #{taskType},</if>
+            <if test="taskTitle != null and taskTitle != ''">task_title = #{taskTitle},</if>
+            <if test="taskContent != null and taskContent != ''">task_content = #{taskContent},</if>
+            <if test="remindTime != null">remind_time = #{remindTime},</if>
+            <if test="repeatType != null">repeat_type = #{repeatType},</if>
+            <if test="isRead != null">is_read = #{isRead},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="relatedId != null">related_id = #{relatedId},</if>
+            update_time = sysdate()
+        </trim>
+        where tr_id = #{trId}
+    </update>
+
+    <delete id="deleteMyTaskReminderByTrId" parameterType="Long">
+        delete from my_task_reminder where tr_id = #{trId}
+    </delete>
+
+    <delete id="deleteMyTaskReminderByTrIds">
+        delete from my_task_reminder where tr_id in
+        <foreach collection="array" item="trId" open="(" separator="," close=")">
+            #{trId}
+        </foreach>
+    </delete>
+
+</mapper>

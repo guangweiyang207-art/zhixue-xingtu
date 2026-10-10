@@ -1,0 +1,171 @@
+{
+  "pages": [{
+    "path": "pages/login",
+    "style": {
+      "navigationBarTitleText": "登录"
+    }
+  }, {
+    "path": "pages/register",
+    "style": {
+      "navigationBarTitleText": "注册"
+    }
+  }, {
+    "path": "pages/index",
+    "style": {
+      "navigationBarTitleText": "主页",
+      "navigationStyle": "custom",
+      "enablePullDownRefresh": true
+    }
+  }, {
+    "path": "pages/book/index",
+    "style": {
+      "navigationBarTitleText": "约课"
+    }
+  }, {
+    "path": "pages/ai/index",
+    "style": {
+      "navigationBarTitleText": "AI问答",
+      "navigationStyle": "custom"
+    }
+  }, {
+    "path": "pages/work/index",
+    "style": {
+      "navigationBarTitleText": "工作台"
+    }
+  }, {
+    "path": "pages/notice/index",
+    "style": {
+      "navigationBarTitleText": "消息通知",
+      "navigationStyle": "custom"
+    }
+  }, {
+    "path": "pages/mine/index",
+    "style": {
+      "navigationBarTitleText": "我的"
+    }
+  }, {
+    "path": "pages/exam/exam",
+    "style": {
+      "navigationBarTitleText": "作业测试",
+      "navigationStyle": "custom"
+    }
+  }, {
+    "path": "pages/report/report",
+    "style": {
+      "navigationBarTitleText": "学习报告",
+      "navigationStyle": "custom"
+    }
+  }, {
+    "path": "pages/resource/resource",
+    "style": {
+      "navigationBarTitleText": "教学资源",
+      "navigationStyle": "custom"
+    }
+  }, {
+    "path": "pages/resourcedetail/resourcedetail",
+    "style": {
+      "navigationBarTitleText": "资源详情",
+      "navigationStyle": "custom"
+    }
+  }, {
+    "path": "pages/errorbook/errorbook",
+    "style": {
+      "navigationBarTitleText": "错题本",
+      "navigationStyle": "custom"
+    }
+  }, {
+    "path": "pages/homeworkall/homeworkall",
+    "style": {
+      "navigationBarTitleText": "全部待办"
+    }
+  }, {
+    "path": "pages/homeworkdetail/homeworkdetail",
+    "style": {
+      "navigationBarTitleText": "作业详情"
+    }
+  }, {
+    "path": "pages/mine/avatar/index",
+    "style": {
+      "navigationBarTitleText": "修改头像"
+    }
+  }, {
+    "path": "pages/mine/info/index",
+    "style": {
+      "navigationBarTitleText": "个人信息"
+    }
+  }, {
+    "path": "pages/mine/info/edit",
+    "style": {
+      "navigationBarTitleText": "编辑资料"
+    }
+  }, {
+    "path": "pages/mine/pwd/index",
+    "style": {
+      "navigationBarTitleText": "修改密码"
+    }
+  }, {
+    "path": "pages/mine/setting/index",
+    "style": {
+      "navigationBarTitleText": "应用设置"
+    }
+  }, {
+    "path": "pages/mine/help/index",
+    "style": {
+      "navigationBarTitleText": "常见问题"
+    }
+  }, {
+    "path": "pages/mine/about/index",
+    "style": {
+      "navigationBarTitleText": "关于我们"
+    }
+  }, {
+    "path": "pages/common/webview/index",
+    "style": {
+      "navigationBarTitleText": "浏览网页"
+    }
+  }, {
+    "path": "pages/common/textview/index",
+    "style": {
+      "navigationBarTitleText": "浏览文本"
+    }
+  },{ "path": "pages/yueke/index", "style": { "navigationStyle": "custom" } },
+  { "path": "pages/reminder/index", "style": { "navigationStyle": "custom", "navigationBarTitleText": "今日提醒" } },
+  { "path": "pages/reminder/add", "style": { "navigationStyle": "custom", "navigationBarTitleText": "添加提醒" } },
+  { "path": "pages/studyrecord/index", "style": { "navigationStyle": "custom", "navigationBarTitleText": "学习记录" } },
+  { "path": "pages/mycourse/index", "style": { "navigationStyle": "custom", "navigationBarTitleText": "已选课程" } },
+  { "path": "pages/settings/index", "style": { "navigationStyle": "custom", "navigationBarTitleText": "设置" } }
+  ],
+  "tabBar": {
+    "color": "#9E9E9E",
+    "selectedColor": "#6B5AED",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [{
+        "pagePath": "pages/index",
+        "iconPath": "static/images/tabbar/tab-home.png",
+        "selectedIconPath": "static/images/tabbar/tab-home_on.png",
+        "text": "主页"
+      }, {
+        "pagePath": "pages/book/index",
+        "iconPath": "static/images/tabbar/tab-book.png",
+        "selectedIconPath": "static/images/tabbar/tab-book_on.png",
+        "text": "约课"
+      }, {
+        "pagePath": "pages/ai/index",
+        "iconPath": "static/images/tabbar/tab-ai.png",
+        "selectedIconPath": "static/images/tabbar/tab-ai_on.png",
+        "text": "AI问答"
+      }, {
+        "pagePath": "pages/mine/index",
+        "iconPath": "static/images/tabbar/tab-mine.png",
+        "selectedIconPath": "static/images/tabbar/tab-mine_on.png",
+        "text": "我的"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "RuoYi",
+    "navigationBarBackgroundColor": "#FFFFFF"
+  }
+}

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.course.mapper.CourseMapper">
+
+    <resultMap type="com.ruoyi.course.pojo.myCourseVo" id="CourseResult">
+        <id property="cId" column="c_id" />
+        <result property="cName" column="c_name" />
+        <result property="teacherId" column="teacher_id" />
+        <result property="type" column="type" />
+        <result property="tag" column="tag" />
+        <result property="difficulty" column="difficulty" />
+        <result property="maxPerson" column="max_person" />
+        <result property="currentPerson" column="current_person" />
+        <result property="description" column="description" />
+        <result property="coverImage" column="cover_image" />
+        <result property="status" column="status" />
+        <result property="startTime" column="start_time" />
+        <result property="endTime" column="end_time" />
+        <result property="resourceId" column="resource_id" />
+        <result property="remark" column="remark" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+        <association property="teacher" javaType="com.ruoyi.teacher.pojo.myTeacher">
+            <id property="teacherId" column="teacher_id" />
+            <result property="userId" column="user_id" />
+            <result property="teacherNo" column="teacher_no" />
+            <result property="department" column="department" />
+            <result property="title" column="title" />
+            <result property="specialty" column="specialty" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="teacherName" column="real_name" />
+        </association>
+    </resultMap>
+
+    <select id="selectHotCourseList" resultMap="CourseResult">
+        SELECT c.c_id, c.c_name, c.type, c.remark, c.current_person, c.max_person,
+               t.teacher_id, u.real_name
+        FROM my_course c, my_teacher t, my_sys_user u
+        WHERE c.teacher_id = t.teacher_id
+          AND t.user_id = u.user_id
+          AND c.status = 1
+        ORDER BY c.current_person DESC
+    </select>
+
+    <select id="selectCourseList" resultMap="CourseResult">
+        SELECT c.c_id, c.c_name, c.type, c.remark, c.current_person, c.max_person
+        FROM my_course c
+        WHERE c.status = 1
+        <if test="type != null and type != 'all'">
+            AND c.type = #{type}
+        </if>
+        ORDER BY c.current_person DESC
+    </select>
+
+    <select id="selectCourseTypeList" resultType="java.lang.String">
+        SELECT DISTINCT type
+        FROM my_course
+        WHERE status = 1 AND type IS NOT NULL AND type != ''
+        ORDER BY type
+    </select>
+
+    <select id="selectCourseDetail" resultMap="CourseResult">
+        SELECT c.c_id, c.c_name, c.type, c.tag, c.difficulty,
+               c.max_person, c.current_person, c.description, c.cover_image,
+               c.status, c.start_time, c.end_time, c.teacher_id, c.resource_id, c.remark,
+               c.create_time, c.update_time
+        FROM my_course c
+        WHERE c.c_id = #{cId}
+    </select>
+
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homepage.mapper.MXYErrorBookMapper">
+
+    <select id="countByStuAndQid" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM my_error_book
+        WHERE stu_id = #{stuId} AND hq_id = #{qId}
+    </select>
+
+    <insert id="insertError">
+        INSERT INTO my_error_book
+            (stu_id, hq_id, c_id, wrong_answer, correct_answer, analysis, tag, error_count, is_mastered, last_wrong_time)
+        VALUES
+            (#{stuId}, #{qId}, #{cId}, #{wrongAnswer}, #{correctAnswer},
+             '来自作业批改的错题，请复习巩固', #{tag}, 1, 0, NOW())
+    </insert>
+
+    <update id="updateWrongAgain">
+        UPDATE my_error_book
+        SET error_count = error_count + 1,
+            wrong_answer = #{wrongAnswer},
+            is_mastered = 0,
+            last_wrong_time = NOW()
+        WHERE stu_id = #{stuId} AND hq_id = #{qId}
+    </update>
+
+</mapper>

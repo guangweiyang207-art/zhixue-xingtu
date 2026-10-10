@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.study.mapper.MyRankConfigMapper">
+
+    <resultMap type="com.ruoyi.study.domain.MyRankConfig" id="MyRankConfigResult">
+        <result property="rankId" column="rank_id"/>
+        <result property="rankName" column="rank_name"/>
+        <result property="rankIcon" column="rank_icon"/>
+        <result property="minScore" column="min_score"/>
+        <result property="maxScore" column="max_score"/>
+        <result property="color" column="color"/>
+        <result property="description" column="description"/>
+        <result property="sortOrder" column="sort_order"/>
+    </resultMap>
+
+    <sql id="selectMyRankConfigVo">
+        select rank_id, rank_name, rank_icon, min_score, max_score, color, description, sort_order
+        from my_rank_config
+    </sql>
+
+    <select id="selectMyRankConfigList" parameterType="com.ruoyi.study.domain.MyRankConfig" resultMap="MyRankConfigResult">
+        <include refid="selectMyRankConfigVo"/>
+        <where>
+            <if test="rankName != null and rankName != ''">
+                and rank_name like concat('%', #{rankName}, '%')
+            </if>
+            <if test="color != null and color != ''">
+                and color = #{color}
+            </if>
+        </where>
+        order by sort_order asc
+    </select>
+
+    <select id="selectMyRankConfigByRankId" parameterType="Long" resultMap="MyRankConfigResult">
+        <include refid="selectMyRankConfigVo"/>
+        where rank_id = #{rankId}
+    </select>
+
+    <insert id="insertMyRankConfig" parameterType="com.ruoyi.study.domain.MyRankConfig" useGeneratedKeys="true" keyProperty="rankId">
+        insert into my_rank_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rankName != null and rankName != ''">rank_name,</if>
+            <if test="rankIcon != null and rankIcon != ''">rank_icon,</if>
+            <if test="minScore != null">min_score,</if>
+            <if test="maxScore != null">max_score,</if>
+            <if test="color != null and color != ''">color,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="sortOrder != null">sort_order,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rankName != null and rankName != ''">#{rankName},</if>
+            <if test="rankIcon != null and rankIcon != ''">#{rankIcon},</if>
+            <if test="minScore != null">#{minScore},</if>
+            <if test="maxScore != null">#{maxScore},</if>
+            <if test="color != null and color != ''">#{color},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMyRankConfig" parameterType="com.ruoyi.study.domain.MyRankConfig">
+        update my_rank_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="rankName != null and rankName != ''">rank_name = #{rankName},</if>
+            <if test="rankIcon != null and rankIcon != ''">rank_icon = #{rankIcon},</if>
+            <if test="minScore != null">min_score = #{minScore},</if>
+            <if test="maxScore != null">max_score = #{maxScore},</if>
+            <if test="color != null and color != ''">color = #{color},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+        </trim>
+        where rank_id = #{rankId}
+    </update>
+
+    <delete id="deleteMyRankConfigByRankId" parameterType="Long">
+        delete from my_rank_config where rank_id = #{rankId}
+    </delete>
+
+    <delete id="deleteMyRankConfigByRankIds">
+        delete from my_rank_config where rank_id in
+        <foreach collection="array" item="rankId" open="(" separator="," close=")">
+            #{rankId}
+        </foreach>
+    </delete>
+
+</mapper>

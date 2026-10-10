@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYNoticeMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.Notice">
+        <id     column="noti_id"        property="noticeId"       />
+        <result column="sender_id"      property="createBy"       />
+        <result column="sender_name"    property="createByName"   />
+        <result column="title"          property="noticeTitle"    />
+        <result column="content"        property="noticeContent"  />
+        <result column="priority"       property="noticeType"     />
+        <result column="status"         property="status"         />
+        <result column="publish_time"   property="publishTime"    />
+        <result column="create_time"    property="createTime"     />
+        <result column="update_time"    property="updateTime"     />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        noti_id, sender_id, title, content, priority, status, publish_time, create_time, update_time
+    </sql>
+
+    <select id="selectNoticeList" parameterType="com.ruoyi.taskmanage.domain.Notice" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM my_notification
+        <where>
+            <if test="noticeTitle != null and noticeTitle != ''">AND title LIKE CONCAT('%', #{noticeTitle}, '%')</if>
+            <if test="noticeType  != null">                       AND priority = #{noticeType}</if>
+            <if test="status      != null">                       AND status   = #{status}</if>
+        </where>
+        ORDER BY publish_time DESC, create_time DESC
+    </select>
+
+    <select id="selectNoticeById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM my_notification WHERE noti_id = #{noticeId}
+    </select>
+
+    <insert id="insertNotice" parameterType="com.ruoyi.taskmanage.domain.Notice" useGeneratedKeys="true" keyProperty="noticeId">
+        INSERT INTO my_notification (sender_id, title, content, priority, status, publish_time, create_time, update_time)
+        VALUES (#{createBy}, #{noticeTitle}, #{noticeContent}, #{noticeType}, #{status}, #{publishTime}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="updateNotice" parameterType="com.ruoyi.taskmanage.domain.Notice">
+        UPDATE my_notification
+        <set>
+            <if test="noticeTitle   != null">title         = #{noticeTitle},</if>
+            <if test="noticeContent != null">content       = #{noticeContent},</if>
+            <if test="noticeType    != null">priority      = #{noticeType},</if>
+            <if test="status        != null">status        = #{status},</if>
+            <if test="publishTime   != null">publish_time  = #{publishTime},</if>
+            <if test="updateTime    != null">update_time   = #{updateTime},</if>
+        </set>
+        WHERE noti_id = #{noticeId}
+    </update>
+
+    <delete id="deleteNoticeById">
+        DELETE FROM my_notification WHERE noti_id = #{noticeId}
+    </delete>
+
+    <select id="countByCreateBy" resultType="int">
+        SELECT COUNT(1) FROM my_notification WHERE sender_id = #{createBy}
+    </select>
+
+</mapper>

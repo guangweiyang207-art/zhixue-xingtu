@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.userext.mapper.MyTeacherMapper">
+
+    <resultMap type="com.ruoyi.userext.domain.MyTeacher" id="MyTeacherResult">
+        <result property="teacherId" column="teacher_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="teacherNo" column="teacher_no"/>
+        <result property="department" column="department"/>
+        <result property="title" column="title"/>
+        <result property="specialty" column="specialty"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="userName" column="real_name"/>
+    </resultMap>
+
+    <sql id="selectMyTeacherVo">
+        select t.teacher_id, t.user_id, t.teacher_no, t.department, t.title, t.specialty, t.create_time, t.update_time, u.real_name as real_name
+        from my_teacher t
+        left join my_sys_user u on t.user_id = u.user_id
+    </sql>
+
+    <select id="selectMyTeacherList" parameterType="com.ruoyi.userext.domain.MyTeacher" resultMap="MyTeacherResult">
+        <include refid="selectMyTeacherVo"/>
+        <where>
+            <if test="teacherNo != null and teacherNo != ''">
+                and t.teacher_no = #{teacherNo}
+            </if>
+            <if test="userName != null and userName != ''">
+                and u.real_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="title != null and title != ''">
+                and t.title = #{title}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMyTeacherByTeacherId" parameterType="Long" resultMap="MyTeacherResult">
+        <include refid="selectMyTeacherVo"/>
+        where teacher_id = #{teacherId}
+    </select>
+
+    <insert id="insertMyTeacher" parameterType="com.ruoyi.userext.domain.MyTeacher" useGeneratedKeys="true" keyProperty="teacherId">
+        insert into my_teacher
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="teacherNo != null and teacherNo != ''">teacher_no,</if>
+            <if test="department != null and department != ''">department,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="specialty != null and specialty != ''">specialty,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="teacherNo != null and teacherNo != ''">#{teacherNo},</if>
+            <if test="department != null and department != ''">#{department},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="specialty != null and specialty != ''">#{specialty},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateMyTeacher" parameterType="com.ruoyi.userext.domain.MyTeacher">
+        update my_teacher
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="teacherNo != null and teacherNo != ''">teacher_no = #{teacherNo},</if>
+            <if test="department != null and department != ''">department = #{department},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="specialty != null and specialty != ''">specialty = #{specialty},</if>
+            update_time = sysdate()
+        </trim>
+        where teacher_id = #{teacherId}
+    </update>
+
+    <delete id="deleteMyTeacherByTeacherId" parameterType="Long">
+        delete from my_teacher where teacher_id = #{teacherId}
+    </delete>
+
+    <delete id="deleteMyTeacherByTeacherIds">
+        delete from my_teacher where teacher_id in
+        <foreach collection="array" item="teacherId" open="(" separator="," close=")">
+            #{teacherId}
+        </foreach>
+    </delete>
+
+    <update id="updateMySysUserRealName">
+        update my_sys_user set real_name = #{realName} where user_id = #{userId}
+    </update>
+
+    <!-- 新增教师时同步插入 my_sys_user 账号：先以临时用户名占位插入，由 MyBatis useGeneratedKeys 回填 userId，再由 service 修正用户名 -->
+    <insert id="insertMySysUserTeacher" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="userId">
+        insert into my_sys_user (username, password, real_name, user_type, status, is_deleted, create_time, update_time)
+        values (#{username}, #{password}, #{realName}, 2, 1, 0, sysdate(), sysdate())
+    </insert>
+
+    <update id="updateMySysUserUsername">
+        update my_sys_user set username = #{username} where user_id = #{userId}
+    </update>
+
+    <!-- 删除教师时同步清理：先取到 user_id 集合 -->
+    <select id="selectUserIdsByTeacherIds" resultType="java.lang.Long">
+        select user_id from my_teacher
+        where teacher_id in
+        <foreach collection="array" item="teacherId" open="(" separator="," close=")">
+            #{teacherId}
+        </foreach>
+        and user_id is not null
+    </select>
+
+    <delete id="deleteMySysUserByUserIds">
+        delete from my_sys_user where user_id in
+        <foreach collection="array" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+</mapper>

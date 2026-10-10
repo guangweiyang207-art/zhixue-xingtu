@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYAdminMapper">
+
+    <!-- my_admin 实际列: admin_id, user_id, admin_no, role, create_time -->
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.Admin">
+        <id     column="admin_id"    property="adminId"    />
+        <result column="user_id"     property="userId"     />
+        <result column="admin_no"    property="adminNo"    />
+        <result column="role"        property="role"       />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        admin_id, user_id, admin_no, role, create_time
+    </sql>
+
+    <select id="selectAdminList" parameterType="com.ruoyi.taskmanage.domain.Admin" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM my_admin
+        <where>
+            <if test="adminNo != null and adminNo != ''">AND admin_no LIKE CONCAT('%', #{adminNo}, '%')</if>
+            <if test="role    != null and role != ''">   AND role = #{role}</if>
+            <if test="userId  != null">                  AND user_id = #{userId}</if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectAdminById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM my_admin WHERE admin_id = #{adminId}
+    </select>
+
+    <select id="selectAdminByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM my_admin WHERE user_id = #{userId}
+    </select>
+
+    <insert id="insertAdmin" parameterType="com.ruoyi.taskmanage.domain.Admin" useGeneratedKeys="true" keyProperty="adminId">
+        INSERT INTO my_admin (user_id, admin_no, role, create_time)
+        VALUES (#{userId}, #{adminNo}, #{role}, #{createTime})
+    </insert>
+
+    <update id="updateAdmin" parameterType="com.ruoyi.taskmanage.domain.Admin">
+        UPDATE my_admin
+        <set>
+            <if test="userId     != null">user_id  = #{userId},</if>
+            <if test="adminNo    != null and adminNo != ''">admin_no = #{adminNo},</if>
+            <if test="role       != null and role != ''">role     = #{role},</if>
+        </set>
+        WHERE admin_id = #{adminId}
+    </update>
+
+    <delete id="deleteAdminById">
+        DELETE FROM my_admin WHERE admin_id = #{adminId}
+    </delete>
+
+</mapper>

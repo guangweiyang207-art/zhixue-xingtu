@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.study.mapper.MyGlobalReportMapper">
+
+    <resultMap type="com.ruoyi.study.domain.MyGlobalReport" id="MyGlobalReportResult">
+        <result property="grId" column="gr_id"/>
+        <result property="stdId" column="std_id"/>
+        <result property="teacherId" column="teacher_id"/>
+        <result property="reportType" column="report_type"/>
+        <result property="reportDate" column="report_date"/>
+        <result property="totalStudents" column="total_students"/>
+        <result property="totalTeachers" column="total_teachers"/>
+        <result property="totalCourses" column="total_courses"/>
+        <result property="activeStudents" column="active_students"/>
+        <result property="newStudents" column="new_students"/>
+        <result property="completedHomeworkCount" column="completed_homework_count"/>
+        <result property="averageCorrectRate" column="average_correct_rate"/>
+        <result property="totalStudyHours" column="total_study_hours"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectMyGlobalReportVo">
+        select gr_id, std_id, teacher_id, report_type, report_date, total_students, total_teachers, total_courses, active_students, new_students, completed_homework_count, average_correct_rate, total_study_hours, create_time
+        from my_global_report
+    </sql>
+
+    <select id="selectMyGlobalReportList" parameterType="com.ruoyi.study.domain.MyGlobalReport" resultMap="MyGlobalReportResult">
+        <include refid="selectMyGlobalReportVo"/>
+        <where>
+            <if test="stdId != null">
+                and std_id = #{stdId}
+            </if>
+            <if test="teacherId != null">
+                and teacher_id = #{teacherId}
+            </if>
+            <if test="reportType != null">
+                and report_type = #{reportType}
+            </if>
+            <if test="reportDate != null">
+                and report_date = #{reportDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMyGlobalReportByGrId" parameterType="Long" resultMap="MyGlobalReportResult">
+        <include refid="selectMyGlobalReportVo"/>
+        where gr_id = #{grId}
+    </select>
+
+    <insert id="insertMyGlobalReport" parameterType="com.ruoyi.study.domain.MyGlobalReport" useGeneratedKeys="true" keyProperty="grId">
+        insert into my_global_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stdId != null">std_id,</if>
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="reportType != null">report_type,</if>
+            <if test="reportDate != null">report_date,</if>
+            <if test="totalStudents != null">total_students,</if>
+            <if test="totalTeachers != null">total_teachers,</if>
+            <if test="totalCourses != null">total_courses,</if>
+            <if test="activeStudents != null">active_students,</if>
+            <if test="newStudents != null">new_students,</if>
+            <if test="completedHomeworkCount != null">completed_homework_count,</if>
+            <if test="averageCorrectRate != null">average_correct_rate,</if>
+            <if test="totalStudyHours != null">total_study_hours,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stdId != null">#{stdId},</if>
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="reportType != null">#{reportType},</if>
+            <if test="reportDate != null">#{reportDate},</if>
+            <if test="totalStudents != null">#{totalStudents},</if>
+            <if test="totalTeachers != null">#{totalTeachers},</if>
+            <if test="totalCourses != null">#{totalCourses},</if>
+            <if test="activeStudents != null">#{activeStudents},</if>
+            <if test="newStudents != null">#{newStudents},</if>
+            <if test="completedHomeworkCount != null">#{completedHomeworkCount},</if>
+            <if test="averageCorrectRate != null">#{averageCorrectRate},</if>
+            <if test="totalStudyHours != null">#{totalStudyHours},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateMyGlobalReport" parameterType="com.ruoyi.study.domain.MyGlobalReport">
+        update my_global_report
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stdId != null">std_id = #{stdId},</if>
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            <if test="reportType != null">report_type = #{reportType},</if>
+            <if test="reportDate != null">report_date = #{reportDate},</if>
+            <if test="totalStudents != null">total_students = #{totalStudents},</if>
+            <if test="totalTeachers != null">total_teachers = #{totalTeachers},</if>
+            <if test="totalCourses != null">total_courses = #{totalCourses},</if>
+            <if test="activeStudents != null">active_students = #{activeStudents},</if>
+            <if test="newStudents != null">new_students = #{newStudents},</if>
+            <if test="completedHomeworkCount != null">completed_homework_count = #{completedHomeworkCount},</if>
+            <if test="averageCorrectRate != null">average_correct_rate = #{averageCorrectRate},</if>
+            <if test="totalStudyHours != null">total_study_hours = #{totalStudyHours},</if>
+        </trim>
+        where gr_id = #{grId}
+    </update>
+
+    <delete id="deleteMyGlobalReportByGrId" parameterType="Long">
+        delete from my_global_report where gr_id = #{grId}
+    </delete>
+
+    <delete id="deleteMyGlobalReportByGrIds">
+        delete from my_global_report where gr_id in
+        <foreach collection="array" item="grId" open="(" separator="," close=")">
+            #{grId}
+        </foreach>
+    </delete>
+
+</mapper>

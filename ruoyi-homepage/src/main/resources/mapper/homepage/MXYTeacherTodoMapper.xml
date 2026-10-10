@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homepage.mapper.MXYTeacherTodoMapper">
+
+    <resultMap id="TodoCountMap" type="com.ruoyi.homepage.domain.TodoCount">
+        <result column="homework_count" property="homeworkCount" />
+        <result column="question_count" property="questionCount" />
+    </resultMap>
+
+    <select id="countHomeworkTodoByTeacherId" resultType="long">
+        SELECT COUNT(1)
+        FROM my_student_homework sh
+        INNER JOIN my_homework h ON h.hw_id = sh.hw_id
+        WHERE h.teacher_id = #{teacherId}
+          AND sh.status = 1
+    </select>
+
+    <select id="countHomeworkTodoByUserId" resultType="long">
+        SELECT COUNT(1)
+        FROM my_student_homework sh
+        INNER JOIN my_homework h ON h.hw_id = sh.hw_id
+        WHERE h.teacher_id = (
+            SELECT teacher_id FROM my_teacher WHERE user_id = #{userId} LIMIT 1
+        )
+          AND sh.status = 1
+    </select>
+
+    <select id="countUnansweredQuestion" resultType="long">
+        SELECT COUNT(1) FROM my_question_answer
+        WHERE status = 0
+          <if test="teacherId != null">AND teacher_id = #{teacherId}</if>
+    </select>
+
+    <select id="selectTodoCount" resultMap="TodoCountMap">
+        SELECT
+            (SELECT COUNT(1)
+               FROM my_student_homework sh
+               INNER JOIN my_homework h ON h.hw_id = sh.hw_id
+              WHERE h.teacher_id = #{teacherId}
+                AND sh.status = 1) AS homework_count,
+            (SELECT COUNT(1)
+               FROM my_question_answer
+              WHERE status = 0
+                <if test="teacherId != null">AND teacher_id = #{teacherId}</if>
+            ) AS question_count
+    </select>
+
+</mapper>

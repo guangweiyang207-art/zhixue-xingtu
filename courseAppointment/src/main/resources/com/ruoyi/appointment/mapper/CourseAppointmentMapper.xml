@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.appointment.mapper.CourseAppointmentMapper">
+
+    <resultMap type="com.ruoyi.appointment.pojo.CourseAppointment" id="AppointmentResult">
+        <id property="caId" column="ca_id" />
+        <result property="stuId" column="stu_id" />
+        <result property="cId" column="c_id" />
+        <result property="appointmentTime" column="appointment_time" />
+        <result property="status" column="status" />
+        <result property="remark" column="remark" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <resultMap type="com.ruoyi.course.pojo.myCourseVo" id="CourseResult">
+        <id property="cId" column="c_id" />
+        <result property="cName" column="c_name" />
+        <result property="teacherId" column="teacher_id" />
+        <result property="type" column="type" />
+        <result property="tag" column="tag" />
+        <result property="difficulty" column="difficulty" />
+        <result property="maxPerson" column="max_person" />
+        <result property="currentPerson" column="current_person" />
+        <result property="description" column="description" />
+        <result property="coverImage" column="cover_image" />
+        <result property="status" column="status" />
+        <result property="startTime" column="start_time" />
+        <result property="endTime" column="end_time" />
+        <result property="resourceId" column="resource_id" />
+        <result property="remark" column="remark" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <insert id="insertAppointment">
+        INSERT INTO my_course_appointment (stu_id, c_id, appointment_time, status, remark, create_time)
+        VALUES (#{stuId}, #{cId}, NOW(), #{status}, #{remark}, NOW())
+    </insert>
+
+    <update id="updateCoursePerson">
+        UPDATE my_course SET current_person = current_person + 1 WHERE c_id = #{cId}
+    </update>
+
+    <update id="decrementCoursePerson">
+        UPDATE my_course SET current_person = GREATEST(current_person - 1, 0) WHERE c_id = #{cId}
+    </update>
+
+    <select id="checkDuplicate" resultType="int">
+        SELECT COUNT(1) FROM my_course_appointment
+        WHERE stu_id = #{stuId} AND c_id = #{cId} AND status IN (0, 1)
+    </select>
+
+    <select id="checkCourseFull" resultType="int">
+        SELECT COUNT(1) FROM my_course
+        WHERE c_id = #{cId} AND current_person >= max_person
+    </select>
+
+    <select id="checkStudentByStuNo" resultType="java.util.Map">
+        SELECT s.stu_id, u.real_name, u.phone
+        FROM my_student s, my_sys_user u
+        WHERE s.user_id = u.user_id AND s.student_no = #{stuNo}
+    </select>
+
+    <select id="checkStudentByStuId" resultType="java.util.Map">
+        SELECT s.stu_id, s.student_no, u.real_name, u.phone
+        FROM my_student s, my_sys_user u
+        WHERE s.user_id = u.user_id AND s.stu_id = #{stuId}
+    </select>
+
+    <!-- 查询我的课程列表（已选/待确认），关联课程信息 -->
+    <select id="selectMyCourseList" resultType="java.util.Map">
+        SELECT a.ca_id, a.stu_id, a.c_id, a.status, a.remark, a.appointment_time, a.create_time,
+               c.c_name, c.type, c.current_person, c.max_person,
+               c.start_time, c.end_time
+        FROM my_course_appointment a, my_course c
+        WHERE a.c_id = c.c_id
+          AND a.stu_id = #{stuId}
+          AND a.status IN (0, 1)
+          <if test="status != null">
+              AND a.status = #{status}
+          </if>
+        ORDER BY a.create_time DESC
+    </select>
+
+    <select id="selectAppointmentById" resultType="java.util.Map">
+        SELECT ca_id, stu_id, c_id, status, create_time
+        FROM my_course_appointment
+        WHERE ca_id = #{caId}
+    </select>
+
+    <update id="cancelAppointment">
+        UPDATE my_course_appointment SET status = 2, update_time = NOW()
+        WHERE ca_id = #{caId}
+    </update>
+
+    <!-- 查询超过30分钟仍未确认的待确认预约 -->
+    <select id="selectExpiredPendingAppointments" resultType="java.util.Map">
+        SELECT ca_id, c_id
+        FROM my_course_appointment
+        WHERE status = 0
+          AND create_time &lt; DATE_SUB(NOW(), INTERVAL 30 MINUTE)
+    </select>
+
+</mapper>

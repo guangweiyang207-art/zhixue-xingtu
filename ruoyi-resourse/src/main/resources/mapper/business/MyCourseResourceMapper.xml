@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.business.mapper.MyCourseResourceMapper">
+    
+    <resultMap type="com.ruoyi.business.domain.MyCourseResource" id="MyCourseResourceResult">
+        <result property="reId"    column="re_id"    />
+        <result property="cId"    column="c_id"    />
+        <result property="resourceType"    column="resource_type"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="fileUrl"    column="file_url"    />
+        <result property="videoUrl"    column="video_url"    />
+        <result property="homework"    column="homework"    />
+        <result property="sortOrder"    column="sort_order"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="tag"    column="tag"    />
+    </resultMap>
+
+    <sql id="selectMyCourseResourceVo">
+        select re_id, c_id, resource_type, title, content, file_url, video_url, homework, sort_order, create_time, tag from my_course_resource
+    </sql>
+
+    <select id="selectMyCourseResourceList" parameterType="com.ruoyi.business.domain.MyCourseResource" resultMap="MyCourseResourceResult">
+        <include refid="selectMyCourseResourceVo"/>
+        <where>  
+            <if test="resourceType != null "> and resource_type = #{resourceType}</if>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectMyCourseResourceByReId" parameterType="Long" resultMap="MyCourseResourceResult">
+        <include refid="selectMyCourseResourceVo"/>
+        where re_id = #{reId}
+    </select>
+
+    <insert id="insertMyCourseResource" parameterType="com.ruoyi.business.domain.MyCourseResource" useGeneratedKeys="true" keyProperty="reId">
+        insert into my_course_resource
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cId != null">c_id,</if>
+            <if test="resourceType != null">resource_type,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="content != null">content,</if>
+            <if test="fileUrl != null">file_url,</if>
+            <if test="videoUrl != null">video_url,</if>
+            <if test="homework != null">homework,</if>
+            <if test="sortOrder != null">sort_order,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="tag != null">tag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cId != null">#{cId},</if>
+            <if test="resourceType != null">#{resourceType},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="content != null">#{content},</if>
+            <if test="fileUrl != null">#{fileUrl},</if>
+            <if test="videoUrl != null">#{videoUrl},</if>
+            <if test="homework != null">#{homework},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="tag != null">#{tag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMyCourseResource" parameterType="com.ruoyi.business.domain.MyCourseResource">
+        update my_course_resource
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cId != null">c_id = #{cId},</if>
+            <if test="resourceType != null">resource_type = #{resourceType},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="fileUrl != null">file_url = #{fileUrl},</if>
+            <if test="videoUrl != null">video_url = #{videoUrl},</if>
+            <if test="homework != null">homework = #{homework},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="tag != null">tag = #{tag},</if>
+        </trim>
+        where re_id = #{reId}
+    </update>
+
+    <delete id="deleteMyCourseResourceByReId" parameterType="Long">
+        delete from my_course_resource where re_id = #{reId}
+    </delete>
+
+    <delete id="deleteMyCourseResourceByReIds" parameterType="String">
+        delete from my_course_resource where re_id in 
+        <foreach item="reId" collection="array" open="(" separator="," close=")">
+            #{reId}
+        </foreach>
+    </delete>
+</mapper>

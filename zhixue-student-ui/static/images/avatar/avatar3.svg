@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- 背景圆 -->
+  <circle cx="50" cy="50" r="50" fill="#C8E6C9"/>
+  <!-- 头发(蓬松中长) -->
+  <path d="M20 50 Q18 25 50 22 Q82 25 80 50 Q82 38 72 36 Q62 30 50 32 Q38 30 28 36 Q18 38 20 50 Z" fill="#6D4C41"/>
+  <!-- 头发纹理 -->
+  <path d="M30 35 Q35 30 42 32 M58 32 Q65 30 70 35" stroke="#4E342E" stroke-width="1" fill="none" stroke-linecap="round"/>
+  <!-- 脸 -->
+  <ellipse cx="50" cy="55" rx="22" ry="26" fill="#FFCC80"/>
+  <!-- 眼镜框(左) -->
+  <circle cx="42" cy="55" r="6" fill="none" stroke="#212121" stroke-width="1.5"/>
+  <!-- 眼镜框(右) -->
+  <circle cx="58" cy="55" r="6" fill="none" stroke="#212121" stroke-width="1.5"/>
+  <!-- 眼镜横梁 -->
+  <line x1="48" y1="55" x2="52" y2="55" stroke="#212121" stroke-width="1.5"/>
+  <!-- 左眼 -->
+  <ellipse cx="42" cy="55" rx="2" ry="2.5" fill="#212121"/>
+  <!-- 右眼 -->
+  <ellipse cx="58" cy="55" rx="2" ry="2.5" fill="#212121"/>
+  <!-- 嘴巴 -->
+  <path d="M44 70 Q50 74 56 70" stroke="#5D4037" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- 腮红 -->
+  <circle cx="36" cy="64" r="3" fill="#FF8A80" opacity="0.4"/>
+  <circle cx="64" cy="64" r="3" fill="#FF8A80" opacity="0.4"/>
+  <!-- 衣领 -->
+  <path d="M20 90 Q50 78 80 90 L80 100 L20 100 Z" fill="#388E3C"/>
+</svg>

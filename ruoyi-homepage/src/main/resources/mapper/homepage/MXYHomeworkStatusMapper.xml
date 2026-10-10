@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homepage.mapper.MXYHomeworkStatusMapper">
+
+    <!--
+        批改作业时同步更新 my_homework.status = 2(已批改)
+        1) 主路径:按 (hw_id, std_id) 精确更新,只改当前学生的那条
+        2) 兜底:按 hw_id 全量更新(对应该作业所有学生行,兼容老数据 std_id 缺失场景)
+    -->
+    <update id="updateStatusToGraded" parameterType="map">
+        UPDATE my_homework
+        SET status = 2,
+            update_time = sysdate()
+        WHERE hw_id = #{hwId} AND std_id = #{stuId}
+    </update>
+
+    <update id="updateStatusToGradedByHwId" parameterType="map">
+        UPDATE my_homework
+        SET status = 2,
+            update_time = sysdate()
+        WHERE hw_id = #{hwId}
+    </update>
+
+</mapper>

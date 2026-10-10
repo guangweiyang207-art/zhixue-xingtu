@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYQuestionAnswerMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.QuestionAnswer">
+        <id     column="id"           property="id"           />
+        <result column="stu_id"       property="stuId"        />
+        <result column="teacher_id"   property="teacherId"    />
+        <result column="question"     property="question"      />
+        <result column="answer"       property="answer"        />
+        <result column="status"       property="status"        />
+        <result column="create_by"    property="createBy"      />
+        <result column="update_by"    property="updateBy"      />
+        <result column="remark"       property="remark"        />
+        <result column="create_time"  property="createTime"    />
+        <result column="update_time"  property="updateTime"    />
+        <!-- JOIN 字段(展示用) -->
+        <result column="stu_name"        property="stuName"        />
+        <result column="stu_avatar"      property="stuAvatar"      />
+        <result column="stu_no"          property="stuNo"          />
+        <result column="class_name"      property="className"      />
+        <result column="grade"           property="grade"          />
+        <result column="major"           property="major"          />
+        <result column="teacher_name"    property="teacherName"    />
+        <result column="teacher_no"      property="teacherNo"      />
+        <result column="teacher_dept"    property="department"     />
+        <result column="teacher_title"   property="title"          />
+        <result column="teacher_spec"    property="specialty"      />
+        <result column="teacher_avatar"  property="teacherAvatar"  />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        qa.id, qa.stu_id, qa.teacher_id, qa.question, qa.answer, qa.status,
+        qa.create_by, qa.update_by, qa.remark, qa.create_time, qa.update_time
+    </sql>
+
+    <!-- 列表查询:JOIN my_student / my_teacher / my_sys_user 两次取展示名 -->
+    <select id="selectQaList" parameterType="com.ruoyi.taskmanage.domain.QuestionAnswer" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List" />,
+            IFNULL(su_stu.real_name, su_stu.username)  AS stu_name,
+            su_stu.avatar                              AS stu_avatar,
+            s.student_no                               AS stu_no,
+            s.class_name                               AS class_name,
+            s.grade                                    AS grade,
+            s.major                                    AS major,
+            IFNULL(su_tch.real_name, su_tch.username)  AS teacher_name,
+            t.teacher_no        AS teacher_no,
+            t.department        AS teacher_dept,
+            t.title             AS teacher_title,
+            t.specialty         AS teacher_spec,
+            su_tch.avatar       AS teacher_avatar
+        FROM my_question_answer qa
+        LEFT JOIN my_student   s  ON s.stu_id      = qa.stu_id
+        LEFT JOIN my_sys_user  su_stu ON su_stu.user_id = s.user_id
+        LEFT JOIN my_teacher   t  ON t.teacher_id  = qa.teacher_id
+        LEFT JOIN my_sys_user  su_tch ON su_tch.user_id = t.user_id
+        <where>
+            <if test="stuId     != null">AND qa.stu_id     = #{stuId}</if>
+            <if test="teacherId != null">AND qa.teacher_id = #{teacherId}</if>
+            <if test="status    != null">AND qa.status     = #{status}</if>
+        </where>
+        ORDER BY qa.create_time DESC
+    </select>
+
+    <select id="selectQaById" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List" />,
+            IFNULL(su_stu.real_name, su_stu.username)  AS stu_name,
+            su_stu.avatar                              AS stu_avatar,
+            s.student_no                               AS stu_no,
+            s.class_name                               AS class_name,
+            s.grade                                    AS grade,
+            s.major                                    AS major,
+            IFNULL(su_tch.real_name, su_tch.username)  AS teacher_name,
+            t.teacher_no        AS teacher_no,
+            t.department        AS teacher_dept,
+            t.title             AS teacher_title,
+            t.specialty         AS teacher_spec,
+            su_tch.avatar       AS teacher_avatar
+        FROM my_question_answer qa
+        LEFT JOIN my_student   s  ON s.stu_id      = qa.stu_id
+        LEFT JOIN my_sys_user  su_stu ON su_stu.user_id = s.user_id
+        LEFT JOIN my_teacher   t  ON t.teacher_id  = qa.teacher_id
+        LEFT JOIN my_sys_user  su_tch ON su_tch.user_id = t.user_id
+        WHERE qa.id = #{id}
+    </select>
+
+    <insert id="insertQa" parameterType="com.ruoyi.taskmanage.domain.QuestionAnswer" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO my_question_answer
+            (stu_id, teacher_id, question, answer, status, create_by, update_by, remark, create_time, update_time)
+        VALUES
+            (#{stuId}, #{teacherId}, #{question}, #{answer}, #{status}, #{createBy}, #{updateBy}, #{remark}, #{createTime}, #{updateTime})
+    </insert>
+
+    <!-- 老师回复:只更新 answer / status / update_by / update_time -->
+    <update id="answerQa" parameterType="com.ruoyi.taskmanage.domain.QuestionAnswer">
+        UPDATE my_question_answer
+        <set>
+            <if test="answer    != null">answer      = #{answer},</if>
+            <if test="status    != null">status      = #{status},</if>
+            <if test="updateBy  != null">update_by   = #{updateBy},</if>
+            <if test="updateTime!= null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateQa" parameterType="com.ruoyi.taskmanage.domain.QuestionAnswer">
+        UPDATE my_question_answer
+        <set>
+            <if test="question  != null">question    = #{question},</if>
+            <if test="answer    != null">answer      = #{answer},</if>
+            <if test="status    != null">status      = #{status},</if>
+            <if test="remark    != null">remark      = #{remark},</if>
+            <if test="updateBy  != null">update_by   = #{updateBy},</if>
+            <if test="updateTime!= null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteQaById">
+        DELETE FROM my_question_answer WHERE id = #{id}
+    </delete>
+</mapper>

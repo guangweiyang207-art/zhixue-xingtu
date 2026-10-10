@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mycourseresource.mapper.ExMyCourseResourceMapper">
+
+    <resultMap type="MyCourseResource" id="MyCourseResourceResult">
+        <result property="reId"    column="re_id"    />
+        <result property="cId"    column="c_id"    />
+        <result property="resourceType"    column="resource_type"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="fileUrl"    column="file_url"    />
+        <result property="videoUrl"    column="video_url"    />
+        <result property="homework"    column="homework"    />
+        <result property="sortOrder"    column="sort_order"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="tag"    column="tag"    />
+    </resultMap>
+
+    <sql id="selectMyCourseResourceVo">
+        select re_id, c_id, resource_type, title, content, file_url, video_url, homework, sort_order, create_time, tag from my_course_resource
+    </sql>
+
+    <select id="selectMyCourseResourceById" parameterType="Long" resultMap="MyCourseResourceResult">
+        <include refid="selectMyCourseResourceVo"/>
+        where re_id = #{reId}
+    </select>
+
+    <select id="selectMyCourseResourceList" parameterType="com.ruoyi.mycourseresource.domain.MyCourseResource" resultMap="MyCourseResourceResult">
+        <include refid="selectMyCourseResourceVo"/>
+        <where>
+            <if test="title != null and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="resourceType != null"> and resource_type = #{resourceType}</if>
+        </where>
+        order by sort_order asc, create_time desc
+    </select>
+
+</mapper>

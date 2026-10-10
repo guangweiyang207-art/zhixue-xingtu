@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.study.mapper.MyBankMapper">
+
+    <resultMap type="com.ruoyi.study.domain.MyBank" id="MyBankResult">
+        <result property="hbId" column="hb_id"/>
+        <result property="qbName" column="qb_name"/>
+        <result property="description" column="description"/>
+        <result property="type" column="type"/>
+        <result property="tag" column="tag"/>
+        <result property="teacherId" column="teacher_id"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="status" column="status"/>
+        <result property="isPublic" column="is_public"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="teacherName" column="teacher_name"/>
+        <result property="teacherNo" column="teacher_no"/>
+        <result property="questionCount" column="question_count"/>
+        <result property="totalScore" column="total_score"/>
+    </resultMap>
+
+    <sql id="selectMyBankVo">
+        select b.hb_id, b.qb_name, b.description, b.type, b.tag, b.teacher_id, b.difficulty, b.status, b.is_public, b.create_time, b.update_time,
+               u.real_name as teacher_name, t.teacher_no,
+               count(distinct qb.q_id) as question_count,
+               sum(q.score) as total_score
+        from my_bank b
+        left join my_teacher t on b.teacher_id = t.teacher_id
+        left join my_sys_user u on t.user_id = u.user_id
+        left join my_question_bank qb on b.hb_id = qb.b_id
+        left join my_question q on qb.q_id = q.q_id
+    </sql>
+
+    <select id="selectMyBankList" parameterType="com.ruoyi.study.domain.MyBank" resultMap="MyBankResult">
+        <include refid="selectMyBankVo"/>
+        <where>
+            <if test="qbName != null and qbName != ''">
+                and b.qb_name like concat('%', #{qbName}, '%')
+            </if>
+            <if test="type != null and type != ''">
+                and b.type = #{type}
+            </if>
+            <if test="teacherId != null">
+                and b.teacher_id = #{teacherId}
+            </if>
+            <if test="difficulty != null">
+                and b.difficulty = #{difficulty}
+            </if>
+            <if test="status != null">
+                and b.status = #{status}
+            </if>
+            <if test="isPublic != null">
+                and b.is_public = #{isPublic}
+            </if>
+        </where>
+        group by b.hb_id
+    </select>
+
+    <select id="selectMyBankByHbId" parameterType="Long" resultMap="MyBankResult">
+        <include refid="selectMyBankVo"/>
+        where b.hb_id = #{hbId}
+        group by b.hb_id
+    </select>
+
+    <insert id="insertMyBank" parameterType="com.ruoyi.study.domain.MyBank" useGeneratedKeys="true" keyProperty="hbId">
+        insert into my_bank
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="qbName != null and qbName != ''">qb_name,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="tag != null and tag != ''">tag,</if>
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="difficulty != null">difficulty,</if>
+            <if test="status != null">status,</if>
+            <if test="isPublic != null">is_public,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="qbName != null and qbName != ''">#{qbName},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="tag != null and tag != ''">#{tag},</if>
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="difficulty != null">#{difficulty},</if>
+            <if test="status != null">#{status},</if>
+            <if test="isPublic != null">#{isPublic},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateMyBank" parameterType="com.ruoyi.study.domain.MyBank">
+        update my_bank
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="qbName != null and qbName != ''">qb_name = #{qbName},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="tag != null and tag != ''">tag = #{tag},</if>
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            <if test="difficulty != null">difficulty = #{difficulty},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="isPublic != null">is_public = #{isPublic},</if>
+            update_time = sysdate()
+        </trim>
+        where hb_id = #{hbId}
+    </update>
+
+    <delete id="deleteMyBankByHbId" parameterType="Long">
+        delete from my_bank where hb_id = #{hbId}
+    </delete>
+
+    <delete id="deleteMyBankByHbIds">
+        delete from my_bank where hb_id in
+        <foreach collection="array" item="hbId" open="(" separator="," close=")">
+            #{hbId}
+        </foreach>
+    </delete>
+
+</mapper>

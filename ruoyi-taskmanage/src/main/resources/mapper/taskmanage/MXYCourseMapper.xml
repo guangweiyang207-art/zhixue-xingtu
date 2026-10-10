@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYCourseMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.Course">
+        <id     column="c_id"            property="cId"            />
+        <result column="c_name"          property="cName"          />
+        <result column="teacher_id"      property="teacherId"      />
+        <result column="type"            property="type"           />
+        <result column="tag"             property="tag"            />
+        <result column="difficulty"      property="difficulty"     />
+        <result column="max_person"      property="maxPerson"      />
+        <result column="current_person"  property="currentPerson"  />
+        <result column="description"     property="description"    />
+        <result column="cover_image"     property="coverImage"     />
+        <result column="status"          property="status"         />
+        <result column="start_time"      property="startTime"      />
+        <result column="end_time"        property="endTime"        />
+        <result column="resource_id"     property="resourceId"     />
+        <result column="remark"          property="remark"         />
+        <result column="create_time"     property="createTime"     />
+        <result column="update_time"     property="updateTime"     />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        c_id, c_name, teacher_id, type, tag, difficulty, max_person, current_person,
+        description, cover_image, status, start_time, end_time, resource_id, remark, create_time, update_time
+    </sql>
+
+    <select id="selectCourseList" parameterType="com.ruoyi.taskmanage.domain.Course" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM my_course
+        <where>
+            <if test="cName    != null and cName != ''">AND c_name    LIKE CONCAT('%', #{cName}, '%')</if>
+            <if test="teacherId != null">                AND teacher_id = #{teacherId}</if>
+            <if test="type     != null and type != ''">  AND type      = #{type}</if>
+            <if test="status   != null">                AND status    = #{status}</if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectCourseById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM my_course WHERE c_id = #{cId}
+    </select>
+
+    <insert id="insertCourse" parameterType="com.ruoyi.taskmanage.domain.Course" useGeneratedKeys="true" keyProperty="cId">
+        INSERT INTO my_course
+        (c_name, teacher_id, type, tag, difficulty, max_person, current_person, description, cover_image, status,
+         start_time, end_time, resource_id, remark, create_time, update_time)
+        VALUES
+        (#{cName}, #{teacherId}, #{type}, #{tag}, #{difficulty}, #{maxPerson}, #{currentPerson}, #{description}, #{coverImage}, #{status},
+         #{startTime}, #{endTime}, #{resourceId}, #{remark}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="updateCourse" parameterType="com.ruoyi.taskmanage.domain.Course">
+        UPDATE my_course
+        <set>
+            <if test="cName         != null">c_name         = #{cName},</if>
+            <if test="teacherId     != null">teacher_id     = #{teacherId},</if>
+            <if test="type          != null">type           = #{type},</if>
+            <if test="tag           != null">tag            = #{tag},</if>
+            <if test="difficulty    != null">difficulty     = #{difficulty},</if>
+            <if test="maxPerson     != null">max_person     = #{maxPerson},</if>
+            <if test="currentPerson != null">current_person = #{currentPerson},</if>
+            <if test="description   != null">description    = #{description},</if>
+            <if test="coverImage    != null">cover_image    = #{coverImage},</if>
+            <if test="status        != null">status         = #{status},</if>
+            <if test="startTime     != null">start_time     = #{startTime},</if>
+            <if test="endTime       != null">end_time       = #{endTime},</if>
+            <if test="resourceId    != null">resource_id    = #{resourceId},</if>
+            <if test="remark        != null">remark         = #{remark},</if>
+            <if test="updateTime    != null">update_time    = #{updateTime},</if>
+        </set>
+        WHERE c_id = #{cId}
+    </update>
+
+    <delete id="deleteCourseById">
+        DELETE FROM my_course WHERE c_id = #{cId}
+    </delete>
+
+    <select id="countByTeacherId" resultType="int">
+        SELECT COUNT(*) FROM my_course WHERE teacher_id = #{teacherId}
+    </select>
+
+</mapper>

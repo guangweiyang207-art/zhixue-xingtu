@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.course.mapper.MyCourseMapper">
+
+    <resultMap type="com.ruoyi.course.domain.MyCourse" id="MyCourseResult">
+        <result property="cId" column="c_id"/>
+        <result property="cName" column="c_name"/>
+        <result property="teacherId" column="teacher_id"/>
+        <result property="type" column="type"/>
+        <result property="tag" column="tag"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="maxPerson" column="max_person"/>
+        <result property="description" column="description"/>
+        <result property="coverImage" column="cover_image"/>
+        <result property="status" column="status"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="teacherName" column="teacher_name"/>
+        <result property="teacherNo" column="teacher_no"/>
+        <result property="currentPerson" column="current_person"/>
+        <result property="homeworkCount" column="homework_count"/>
+    </resultMap>
+
+    <sql id="selectMyCourseVo">
+        select c.c_id, c.c_name, c.teacher_id, c.type, c.tag, c.difficulty, c.max_person, c.description, c.cover_image, c.status, c.start_time, c.end_time, c.remark, c.create_time, c.update_time,
+               COALESCE(u.real_name, CONCAT('教师', c.teacher_id)) AS teacher_name, t.teacher_no,
+               count(distinct sc.stu_id) as current_person,
+               count(distinct h.hw_id) as homework_count
+        from my_course c
+        left join my_teacher t on c.teacher_id = t.teacher_id
+        left join my_sys_user u on t.user_id = u.user_id
+        left join my_student_course sc on c.c_id = sc.c_id
+        left join my_homework h on c.c_id = h.c_id
+    </sql>
+
+    <select id="selectMyCourseList" parameterType="com.ruoyi.course.domain.MyCourse" resultMap="MyCourseResult">
+        <include refid="selectMyCourseVo"/>
+        <where>
+            <if test="cName != null and cName != ''">
+                and c.c_name like concat('%', #{cName}, '%')
+            </if>
+            <if test="teacherName != null and teacherName != ''">
+                and u.real_name like concat('%', #{teacherName}, '%')
+            </if>
+            <if test="type != null and type != ''">
+                and c.type = #{type}
+            </if>
+            <if test="difficulty != null">
+                and c.difficulty = #{difficulty}
+            </if>
+            <if test="status != null">
+                and c.status = #{status}
+            </if>
+        </where>
+        group by c.c_id
+    </select>
+
+    <select id="selectMyCourseByCId" parameterType="Long" resultMap="MyCourseResult">
+        <include refid="selectMyCourseVo"/>
+        where c.c_id = #{cId}
+        group by c.c_id
+    </select>
+
+    <insert id="insertMyCourse" parameterType="com.ruoyi.course.domain.MyCourse" useGeneratedKeys="true" keyProperty="cId">
+        insert into my_course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cName != null and cName != ''">c_name,</if>
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="tag != null and tag != ''">tag,</if>
+            <if test="difficulty != null">difficulty,</if>
+            <if test="maxPerson != null">max_person,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="coverImage != null and coverImage != ''">cover_image,</if>
+            <if test="status != null">status,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cName != null and cName != ''">#{cName},</if>
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="tag != null and tag != ''">#{tag},</if>
+            <if test="difficulty != null">#{difficulty},</if>
+            <if test="maxPerson != null">#{maxPerson},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="coverImage != null and coverImage != ''">#{coverImage},</if>
+            <if test="status != null">#{status},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateMyCourse" parameterType="com.ruoyi.course.domain.MyCourse">
+        update my_course
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cName != null and cName != ''">c_name = #{cName},</if>
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="tag != null and tag != ''">tag = #{tag},</if>
+            <if test="difficulty != null">difficulty = #{difficulty},</if>
+            <if test="maxPerson != null">max_person = #{maxPerson},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="coverImage != null and coverImage != ''">cover_image = #{coverImage},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            update_time = sysdate()
+        </trim>
+        where c_id = #{cId}
+    </update>
+
+    <delete id="deleteMyCourseByCId" parameterType="Long">
+        delete from my_course where c_id = #{cId}
+    </delete>
+
+    <delete id="deleteMyCourseByCIds">
+        delete from my_course where c_id in
+        <foreach collection="array" item="cId" open="(" separator="," close=")">
+            #{cId}
+        </foreach>
+    </delete>
+
+</mapper>

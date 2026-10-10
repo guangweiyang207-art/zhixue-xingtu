@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYAiChatMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.AiChat">
+        <id     column="chat_id"        property="chatId"        />
+        <result column="stu_id"         property="stuId"         />
+        <result column="teacher_id"     property="teacherId"     />
+        <result column="session_id"     property="sessionId"     />
+        <result column="question"       property="question"      />
+        <result column="answer"         property="answer"        />
+        <result column="question_type"  property="questionType"  />
+        <result column="is_satisfied"   property="isSatisfied"   />
+        <result column="create_time"    property="createTime"    />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        chat_id, stu_id, teacher_id, session_id, question, answer, question_type, is_satisfied, create_time
+    </sql>
+
+    <select id="selectAiChatList" parameterType="com.ruoyi.taskmanage.domain.AiChat" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM my_ai_chat
+        <where>
+            <if test="stuId   != null">AND stu_id   = #{stuId}</if>
+            <if test="teacherId != null">AND teacher_id = #{teacherId}</if>
+            <if test="sessionId != null and sessionId != ''">AND session_id = #{sessionId}</if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectAiChatById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM my_ai_chat WHERE chat_id = #{chatId}
+    </select>
+
+    <select id="countUnanswered" resultType="long">
+        SELECT COUNT(1) FROM my_ai_chat WHERE answer IS NULL OR answer = ''
+    </select>
+
+    <insert id="insertAiChat" parameterType="com.ruoyi.taskmanage.domain.AiChat" useGeneratedKeys="true" keyProperty="chatId">
+        INSERT INTO my_ai_chat (stu_id, teacher_id, session_id, question, answer, question_type, is_satisfied, create_time)
+        VALUES (#{stuId}, #{teacherId}, #{sessionId}, #{question}, #{answer}, #{questionType}, #{isSatisfied}, #{createTime})
+    </insert>
+
+    <update id="updateAiChat" parameterType="com.ruoyi.taskmanage.domain.AiChat">
+        UPDATE my_ai_chat
+        <set>
+            <if test="teacherId   != null">teacher_id   = #{teacherId},</if>
+            <if test="answer      != null">answer       = #{answer},</if>
+            <if test="isSatisfied != null">is_satisfied = #{isSatisfied},</if>
+        </set>
+        WHERE chat_id = #{chatId}
+    </update>
+
+    <delete id="deleteAiChatById">
+        DELETE FROM my_ai_chat WHERE chat_id = #{chatId}
+    </delete>
+
+</mapper>

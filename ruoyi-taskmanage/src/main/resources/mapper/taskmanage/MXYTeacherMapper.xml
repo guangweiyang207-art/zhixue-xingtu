@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYTeacherMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.Teacher">
+        <id     column="teacher_id" property="teacherId" />
+        <result column="user_id"    property="userId"    />
+        <result column="teacher_no" property="teacherNo" />
+        <result column="department" property="department" />
+        <result column="title"      property="title"     />
+        <result column="specialty"  property="specialty" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <!-- JOIN my_sys_user 展示字段 -->
+        <result column="real_name"  property="realName"  />
+        <result column="username"   property="username"  />
+        <result column="avatar"     property="avatar"    />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        t.teacher_id, t.user_id, t.teacher_no, t.department, t.title, t.specialty, t.create_time, t.update_time,
+        u.real_name, u.username, u.avatar
+    </sql>
+
+    <sql id="From_Join">
+        FROM my_teacher t
+        LEFT JOIN my_sys_user u ON u.user_id = t.user_id
+    </sql>
+
+    <select id="selectTeacherList" parameterType="com.ruoyi.taskmanage.domain.Teacher" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        <include refid="From_Join" />
+        <where>
+            <if test="teacherNo != null and teacherNo != ''">AND t.teacher_no = #{teacherNo}</if>
+            <if test="department != null and department != ''">AND t.department LIKE CONCAT('%', #{department}, '%')</if>
+        </where>
+        ORDER BY t.teacher_id DESC
+    </select>
+
+    <select id="selectTeacherById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        <include refid="From_Join" />
+        WHERE t.teacher_id = #{teacherId}
+    </select>
+
+    <select id="selectTeacherByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        <include refid="From_Join" />
+        WHERE t.user_id = #{userId}
+    </select>
+
+    <insert id="insertTeacher" parameterType="com.ruoyi.taskmanage.domain.Teacher" useGeneratedKeys="true" keyProperty="teacherId">
+        INSERT INTO my_teacher (user_id, teacher_no, department, title, specialty, create_time, update_time)
+        VALUES (#{userId}, #{teacherNo}, #{department}, #{title}, #{specialty}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="updateTeacher" parameterType="com.ruoyi.taskmanage.domain.Teacher">
+        UPDATE my_teacher
+        <set>
+            <if test="userId     != null">user_id     = #{userId},</if>
+            <if test="teacherNo  != null">teacher_no  = #{teacherNo},</if>
+            <if test="department != null">department  = #{department},</if>
+            <if test="title      != null">title       = #{title},</if>
+            <if test="specialty  != null">specialty   = #{specialty},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE teacher_id = #{teacherId}
+    </update>
+
+    <delete id="deleteTeacherById">
+        DELETE FROM my_teacher WHERE teacher_id = #{teacherId}
+    </delete>
+
+</mapper>

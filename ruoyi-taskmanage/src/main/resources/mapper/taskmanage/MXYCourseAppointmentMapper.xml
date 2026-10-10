@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.taskmanage.mapper.MXYCourseAppointmentMapper">
+
+    <!-- my_course_appointment 实际列: ca_id, stu_id, c_id, appointment_time, status, remark, create_time, update_time -->
+    <resultMap id="BaseResultMap" type="com.ruoyi.taskmanage.domain.CourseAppointment">
+        <id     column="ca_id"            property="appointmentId" />
+        <result column="stu_id"           property="userId"        />
+        <result column="c_id"             property="courseId"      />
+        <result column="appointment_time" property="appointmentTime" />
+        <result column="status"           property="status"        />
+        <result column="remark"           property="remark"        />
+        <result column="create_time"      property="createTime"    />
+        <result column="update_time"      property="updateTime"    />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ca_id, stu_id, c_id, appointment_time, status, remark, create_time, update_time
+    </sql>
+
+    <select id="selectCourseAppointmentList" parameterType="com.ruoyi.taskmanage.domain.CourseAppointment" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM my_course_appointment
+        <where>
+            <if test="courseId  != null">AND c_id   = #{courseId}</if>
+            <if test="userId    != null">AND stu_id = #{userId}</if>
+            <if test="status    != null">AND status = #{status}</if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectCourseAppointmentById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" /> FROM my_course_appointment WHERE ca_id = #{appointmentId}
+    </select>
+
+    <insert id="insertCourseAppointment" parameterType="com.ruoyi.taskmanage.domain.CourseAppointment" useGeneratedKeys="true" keyProperty="appointmentId">
+        INSERT INTO my_course_appointment (stu_id, c_id, appointment_time, status, remark, create_time, update_time)
+        VALUES (#{userId}, #{courseId}, #{appointmentTime}, #{status}, #{remark}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="updateCourseAppointment" parameterType="com.ruoyi.taskmanage.domain.CourseAppointment">
+        UPDATE my_course_appointment
+        <set>
+            <if test="userId          != null">stu_id           = #{userId},</if>
+            <if test="courseId        != null">c_id             = #{courseId},</if>
+            <if test="appointmentTime != null">appointment_time = #{appointmentTime},</if>
+            <if test="status          != null">status           = #{status},</if>
+            <if test="remark          != null">remark           = #{remark},</if>
+            <if test="updateTime      != null">update_time      = #{updateTime},</if>
+        </set>
+        WHERE ca_id = #{appointmentId}
+    </update>
+
+    <delete id="deleteCourseAppointmentById">
+        DELETE FROM my_course_appointment WHERE ca_id = #{appointmentId}
+    </delete>
+
+    <select id="countDistinctStudentsByTeacherId" resultType="int">
+        SELECT COUNT(DISTINCT a.stu_id)
+        FROM my_course_appointment a
+        INNER JOIN my_course c ON c.c_id = a.c_id
+        WHERE c.teacher_id = #{teacherId}
+    </select>
+
+    <select id="countActiveStudentsByTeacherId" resultType="int">
+        SELECT COUNT(DISTINCT a.stu_id)
+        FROM my_course_appointment a
+        INNER JOIN my_course c ON c.c_id = a.c_id
+        WHERE c.teacher_id = #{teacherId}
+          AND a.create_time &gt;= DATE_SUB(NOW(), INTERVAL #{fromDays} DAY)
+    </select>
+
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.study.mapper.DashboardMapper">
+
+    <resultMap id="ErrorHeatmapResult" type="com.ruoyi.study.domain.ErrorHeatmapVO">
+        <result property="stuId" column="stu_id"/>
+        <result property="studentName" column="student_name"/>
+        <result property="tag" column="tag"/>
+        <result property="errorCount" column="error_count"/>
+    </resultMap>
+
+    <resultMap id="AiChatResult" type="com.ruoyi.study.domain.AiChatVO">
+        <result property="chatId" column="chat_id"/>
+        <result property="studentName" column="student_name"/>
+        <result property="question" column="question"/>
+        <result property="answer" column="answer"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <resultMap id="ClassRadarResult" type="com.ruoyi.study.domain.ClassRadarVO">
+        <result property="className" column="class_name"/>
+        <result property="avgCorrectRate" column="avg_correct_rate"/>
+        <result property="avgStudyDuration" column="avg_study_duration"/>
+        <result property="avgCompletedHomework" column="avg_completed_homework"/>
+        <result property="avgRankScore" column="avg_rank_score"/>
+        <result property="avgTotalQuestions" column="avg_total_questions"/>
+    </resultMap>
+
+    <resultMap id="CourseRankingResult" type="com.ruoyi.study.domain.CourseRankingVO">
+        <id property="cId" column="c_id"/>
+        <result property="cName" column="c_name"/>
+        <result property="currentPerson" column="current_person"/>
+        <result property="type" column="type"/>
+        <result property="teacherName" column="teacher_name"/>
+    </resultMap>
+
+    <select id="selectPlatformOverview" resultType="java.util.LinkedHashMap">
+        SELECT
+            (SELECT COUNT(*) FROM my_student) AS totalStudents,
+            (SELECT COUNT(*) FROM my_teacher) AS totalTeachers,
+            (SELECT COUNT(*) FROM my_course WHERE status = 1) AS totalCourses,
+            (SELECT COUNT(*) FROM my_homework WHERE status = 1) AS totalHomework,
+            (SELECT COUNT(DISTINCT stu_id) FROM my_study_record WHERE study_date = CURDATE()) AS todayStudyCount,
+            (SELECT COALESCE(SUM(error_count), 0) FROM my_error_book WHERE is_mastered = 0) AS totalErrorQuestions
+    </select>
+
+    <select id="selectErrorHeatmap" resultMap="ErrorHeatmapResult">
+        SELECT
+            e.stu_id,
+            COALESCE(u.real_name, CONCAT('学生', e.stu_id)) AS student_name,
+            e.tag,
+            SUM(e.error_count) AS error_count
+        FROM my_error_book e
+        LEFT JOIN my_student s ON e.stu_id = s.stu_id
+        LEFT JOIN my_sys_user u ON s.user_id = u.user_id
+        WHERE e.is_mastered = 0
+          AND e.tag IS NOT NULL
+        <if test="date != null and date != ''">
+            AND DATE(e.last_wrong_time) = #{date}
+        </if>
+        GROUP BY e.stu_id, e.tag
+        ORDER BY e.stu_id, error_count DESC
+    </select>
+
+    <select id="selectRecentAiChats" resultMap="AiChatResult">
+        SELECT
+            c.chat_id,
+            COALESCE(u.real_name, CONCAT('学生', c.stu_id)) AS student_name,
+            c.question,
+            c.answer,
+            c.create_time
+        FROM my_ai_chat c
+        LEFT JOIN my_student s ON c.stu_id = s.stu_id
+        LEFT JOIN my_sys_user u ON s.user_id = u.user_id
+        WHERE c.answer IS NOT NULL
+        ORDER BY c.create_time DESC
+        LIMIT 10
+    </select>
+
+    <select id="selectActivityRing" resultType="java.util.LinkedHashMap">
+        SELECT
+            (SELECT COUNT(*) FROM my_student) AS totalStudents,
+            (SELECT COUNT(DISTINCT stu_id) FROM my_study_record
+             WHERE create_time >= CASE WHEN #{period} = 'month'
+                 THEN DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                 ELSE DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+             END) AS activeStudents,
+            (SELECT COUNT(*) FROM my_teacher) AS totalTeachers,
+            (SELECT COUNT(DISTINCT t.teacher_id) FROM my_teacher t
+             LEFT JOIN my_sys_user u ON t.user_id = u.user_id
+             WHERE u.status = 1 AND u.is_deleted = 0
+               AND (
+                   EXISTS (
+                       SELECT 1 FROM my_homework h
+                       WHERE h.teacher_id = t.teacher_id
+                         AND h.update_time >= CASE WHEN #{period} = 'month'
+                             THEN DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                             ELSE DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+                         END
+                   ) OR EXISTS (
+                       SELECT 1 FROM my_course c
+                       WHERE c.teacher_id = t.teacher_id
+                         AND c.update_time >= CASE WHEN #{period} = 'month'
+                             THEN DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                             ELSE DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+                         END
+                   )
+               )) AS activeTeachers
+    </select>
+
+    <select id="selectClassRadar" resultMap="ClassRadarResult">
+        SELECT
+            s.class_name,
+            COALESCE(ROUND(AVG(r.correct_rate), 2), 0) AS avg_correct_rate,
+            COALESCE(ROUND(AVG(r.study_duration), 0), 0) AS avg_study_duration,
+            COALESCE(ROUND(AVG(r.completed_homework), 0), 0) AS avg_completed_homework,
+            COALESCE(ROUND(AVG(sr.rank_score), 0), 0) AS avg_rank_score,
+            COALESCE(ROUND(AVG(sr.total_questions), 0), 0) AS avg_total_questions
+        FROM my_student s
+        LEFT JOIN my_study_report r ON s.stu_id = r.stu_id AND r.report_type = 2
+        LEFT JOIN my_student sr ON s.stu_id = sr.stu_id
+        WHERE s.class_name IS NOT NULL
+        GROUP BY s.class_name
+        ORDER BY avg_correct_rate DESC
+    </select>
+
+    <select id="selectCourseRanking" resultMap="CourseRankingResult">
+        SELECT
+            c.c_id,
+            c.c_name,
+            c.current_person,
+            c.type,
+            COALESCE(u.real_name, '未知教师') AS teacher_name
+        FROM my_course c
+        LEFT JOIN my_teacher t ON c.teacher_id = t.teacher_id
+        LEFT JOIN my_sys_user u ON t.user_id = u.user_id
+        WHERE c.status = 1
+        ORDER BY c.current_person DESC
+        LIMIT 10
+    </select>
+
+</mapper>

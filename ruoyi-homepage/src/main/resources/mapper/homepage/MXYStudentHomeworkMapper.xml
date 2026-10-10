@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.homepage.mapper.MXYStudentHomeworkMapper">
+
+    <!-- 详情:作业 + 学生 + 作答(JSON) -->
+    <select id="selectDetail" resultType="com.ruoyi.homepage.domain.StudentHomeworkDetailVO">
+        SELECT
+            sh.sh_id              AS shId,
+            sh.hw_id              AS hwId,
+            h.c_id                AS cId,
+            h.title               AS title,
+            h.content             AS content,
+            h.total_score         AS totalScore,
+            sh.stu_id             AS stuId,
+            u.real_name           AS studentName,
+            s.student_no          AS studentNo,
+            s.class_name          AS className,
+            DATE_FORMAT(sh.submit_time, '%Y-%m-%d %H:%i:%s') AS submitTime,
+            sh.answers            AS answers,
+            sh.score              AS score,
+            sh.teacher_comment    AS comment,
+            sh.status             AS status
+        FROM my_student_homework sh
+        INNER JOIN my_homework   h ON h.hw_id    = sh.hw_id
+        INNER JOIN my_student    s ON s.stu_id   = sh.stu_id
+        INNER JOIN my_sys_user   u ON u.user_id  = s.user_id
+        WHERE sh.sh_id = #{shId}
+    </select>
+
+    <!-- 提交批改:更新 分数/评语/批改时间/状态 -->
+    <update id="updateGrade">
+        UPDATE my_student_homework
+        <set>
+            <if test="score   != null">score           = #{score},</if>
+            <if test="comment != null">teacher_comment = #{comment},</if>
+            correct_time = NOW(),
+            status       = 2
+        </set>
+        WHERE sh_id = #{shId}
+    </update>
+
+</mapper>

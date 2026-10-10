@@ -1,0 +1,68 @@
+######################################################################
+# Build Tools
+
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+######################################################################
+# IDE
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### JRebel ###
+rebel.xml
+
+### NetBeans ###
+nbproject/private/
+build/*
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+######################################################################
+# Others
+*.log
+*.xml.versionsBackup
+*.swp
+
+# Secrets / local-only config
+application-local.yml
+
+# Frontend dependencies & build output
+node_modules/
+unpackage/
+
+# Model artifacts (too large for GitHub)
+ft-model/
+scripts/ft-embed/
+
+# Deployment & private tooling
+deploy/
+scripts/deploy_portfolio.py
+PROJECT_NOTES.md
+.codex-backend-build.log
+.codex-VerifySeedPassword.java
+.codebuddy/
+.claude/
+.trae/
+
+!*/build/*.java
+!*/build/*.html
+!*/build/*.xml

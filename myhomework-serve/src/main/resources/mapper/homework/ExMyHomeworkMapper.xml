@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.myhomework.mapper.ExMyHomeworkMapper">
+
+    <resultMap type="MyHomework" id="MyHomeworkResult">
+        <result property="hwId"    column="hw_id"    />
+        <result property="stdId"    column="std_id"    />
+        <result property="cId"    column="c_id"    />
+        <result property="teacherId"    column="teacher_id"    />
+        <result property="title"    column="title"    />
+        <result property="content"    column="content"    />
+        <result property="type"    column="type"    />
+        <result property="totalScore"    column="total_score"    />
+        <result property="deadline"    column="deadline"    />
+        <result property="status"    column="status"    />
+        <result property="score"    column="score"    />
+        <result property="teacherComment"    column="teacher_comment"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectMyHomeworkVo">
+        select hw_id, std_id, c_id, teacher_id, title, content, type, total_score, deadline, status, create_time, update_time from my_homework
+    </sql>
+
+    <select id="selectMyHomeworkById" parameterType="Long" resultMap="MyHomeworkResult">
+        <include refid="selectMyHomeworkVo"/>
+        where hw_id = #{hwId}
+    </select>
+
+    <select id="selectMyHomeworkList" parameterType="com.ruoyi.myhomework.domain.MyHomework" resultMap="MyHomeworkResult">
+        <include refid="selectMyHomeworkVo"/>
+        <where>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="type != null "> and type = #{type}</if>
+        </where>
+    </select>
+
+    <select id="selectMyHomeworkByUserId" parameterType="Long" resultMap="MyHomeworkResult">
+        select h.hw_id, h.std_id, h.c_id, h.teacher_id, h.title, h.content, h.type, h.total_score, h.deadline,
+               h.status as status,
+               msh.score, msh.teacher_comment, msh.answers,
+               msh.submit_time,
+               h.create_time, h.update_time
+        from my_homework h
+        inner join my_student s on h.std_id = s.stu_id
+        left join my_student_homework msh on msh.stu_id = s.stu_id and msh.hw_id = h.hw_id
+        where s.user_id = #{userId}
+    </select>
+
+</mapper>

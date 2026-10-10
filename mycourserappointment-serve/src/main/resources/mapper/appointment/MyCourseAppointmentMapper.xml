@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mycourserappointment.mapper.MyCourseAppointmentMapper">
+
+    <resultMap type="MyCourseAppointment" id="MyCourseAppointmentResult">
+        <result property="caId"    column="ca_id"    />
+        <result property="stuId"    column="stu_id"    />
+        <result property="cId"    column="c_id"    />
+        <result property="appointmentTime"    column="appointment_time"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+</mapper>
